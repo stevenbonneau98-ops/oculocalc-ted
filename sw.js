@@ -1,5 +1,5 @@
 // EyeCalc Service Worker — caches everything for offline use.
-const CACHE = 'eyecalc-v2-0-0';
+const CACHE = 'eyecalc-v2-2-3';
 const FILES = [
   './',
   './index.html',
@@ -25,8 +25,26 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Cache-first strategy: serve from cache, fall back to network.
+  const req = e.request;
+  const isHTML = req.mode === 'navigate' ||
+    (req.method === 'GET' && req.headers.get('accept')?.includes('text/html'));
+
+  if (isHTML) {
+    // Network-first for HTML so edits show up immediately; fall back to cache offline.
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req).then((c) => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Cache-first for static assets.
   e.respondWith(
-    caches.match(e.request).then((cached) => cached || fetch(e.request))
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });

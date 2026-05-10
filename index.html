@@ -18,7 +18,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
@@ -57,9 +57,9 @@
   --pink: #B94A3B;
   --indigo: #0B5FFF;
 
-  --serif: 'EB Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-  --sans:  'EB Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-  --mono:  'EB Garamond', 'Iowan Old Style', Georgia, serif;
+  --serif: 'Source Serif 4', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --sans:  'Geist', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --mono:  'Geist', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   --shadow-1: 0 1px 2px rgba(10,31,68,0.06), 0 0 0 1px rgba(10,31,68,0.03);
   --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -85,13 +85,13 @@
 }
 
 html, body {
-  font-family: var(--serif);
+  font-family: var(--sans);
   background: var(--bg);
   color: var(--text);
   height: 100%;
   overflow: hidden;
-  font-size: 16px;
-  font-feature-settings: "tnum" 0, "kern" 1;
+  font-size: 15px;
+  font-feature-settings: "kern" 1, "ss01" 1;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -148,19 +148,20 @@ html, body {
   padding: 0 24px 8px;
   font-family: var(--serif);
   font-weight: 400;
-  font-size: 36px;
-  line-height: 1.04;
-  letter-spacing: -0.02em;
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   color: var(--text);
 }
 .large-title em { font-style: italic; }
 .subtitle {
   padding: 4px 24px 14px;
-  font-family: var(--serif);
-  font-style: italic;
+  font-family: var(--sans);
+  font-weight: 400;
   color: var(--text3);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 13px;
+  line-height: 1.5;
 }
 .app-header { display: flex; align-items: center; gap: 14px; padding: 4px 24px 6px; }
 .app-header .app-logo { width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0; box-shadow: var(--shadow-1); }
@@ -179,11 +180,62 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Tab bar (specialty switcher) */
+/* Section toggle — replaces horizontal tab bar */
+.section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 4px 0;
+  margin-bottom: 4px;
+}
+.section-toggle-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.section-toggle-control {
+  position: relative;
+  flex: 1;
+}
+.section-toggle-control select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--separator);
+  border-radius: 10px;
+  padding: 10px 36px 10px 14px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  outline: none;
+  box-shadow: var(--shadow-1);
+  transition: border-color 0.15s var(--ease-ios);
+}
+.section-toggle-control select:focus { border-color: var(--signal); }
+.section-toggle-control select:disabled { opacity: 0.5; cursor: not-allowed; }
+.section-toggle-chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--signal);
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Tab bar — Home B underlined specialty tabs (kept for reference, not currently used) */
 .tab-bar {
   display: flex;
-  gap: 6px;
-  padding: 4px 16px 12px;
+  gap: 4px;
+  padding: 4px 16px 0;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -191,33 +243,30 @@ html, body {
   top: 0;
   background: var(--bg);
   z-index: 9;
+  border-bottom: 1px solid var(--separator);
 }
 .tab-bar::-webkit-scrollbar { display: none; }
 .tab-pill {
   flex-shrink: 0;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: var(--card);
-  color: var(--text2);
-  border: 1px solid var(--separator);
+  padding: 10px 12px 12px;
+  background: transparent;
+  color: var(--text3);
+  border: none;
+  border-bottom: 2.4px solid transparent;
   font-family: var(--sans);
-  font-style: italic;
   font-size: 13px;
   font-weight: 500;
+  letter-spacing: -0.005em;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s var(--ease-ios);
-  box-shadow: var(--shadow-1);
+  transition: color 0.15s var(--ease-ios), border-color 0.15s var(--ease-ios);
+  margin-bottom: -1px;
 }
+.tab-pill:hover { color: var(--text2); }
 .tab-pill.active {
-  background: var(--ink);
-  color: var(--paper);
-  border-color: var(--ink);
-  font-style: normal;
-  font-weight: 500;
-}
-@media (prefers-color-scheme: dark) {
-  .tab-pill.active { background: var(--signal); color: #fff; border-color: var(--signal); }
+  color: var(--signal);
+  border-bottom-color: var(--signal);
+  font-weight: 600;
 }
 
 /* Search bar */
@@ -236,12 +285,12 @@ html, body {
   border: none;
   background: transparent;
   outline: none;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 15px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 400;
   color: var(--text);
 }
-.search-bar input::placeholder { color: var(--slate); font-style: italic; }
+.search-bar input::placeholder { color: var(--slate); }
 .search-icon { color: var(--slate); display: inline-flex; }
 
 /* Cards (legacy list rows, kept for calculator inputs) */
@@ -276,11 +325,11 @@ html, body {
   line-height: 1;
 }
 .card-content { flex: 1; min-width: 0; }
-.card-title { font-family: var(--serif); font-size: 17px; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 2px; color: var(--text); }
-.card-desc { font-family: var(--sans); font-style: italic; font-size: 13px; color: var(--text3); line-height: 1.35; }
+.card-title { font-family: var(--sans); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 2px; color: var(--text); }
+.card-desc { font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--text3); line-height: 1.4; }
 .chevron { color: var(--slate); font-size: 18px; flex-shrink: 0; }
 
-/* Tile grid — Home Hi-fi B */
+/* Tile grid — Home B: 2-up short tiles with letter badge at top */
 .tile-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -289,9 +338,9 @@ html, body {
 }
 .tile {
   position: relative;
-  aspect-ratio: 1 / 1;
+  min-height: 80px;
   background: var(--card);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 14px;
   border: none;
   cursor: pointer;
@@ -299,37 +348,30 @@ html, body {
   text-align: left;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 4px;
   font-family: inherit;
   color: inherit;
   transition: transform 0.12s var(--ease-ios), background 0.15s;
 }
+.tile:hover { background: var(--mist); }
 .tile:active { transform: scale(0.97); background: var(--mist); }
-.tile-letter {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 64px;
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  color: var(--signal);
-}
 .tile-name {
-  font-family: var(--serif);
-  font-weight: 500;
+  font-family: var(--sans);
+  font-weight: 600;
   font-size: 14px;
   color: var(--text);
-  line-height: 1.15;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
 .tile-fam {
-  margin-top: 3px;
   font-family: var(--sans);
-  font-style: italic;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 400;
   color: var(--text3);
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
+  line-height: 1.3;
 }
 .tile-badge {
   position: absolute;
@@ -433,8 +475,8 @@ html, body {
 }
 .item:last-child { border-bottom: none; }
 .item:active { background: var(--mist); }
-.item-text { flex: 1; font-family: var(--serif); font-size: 16px; line-height: 1.4; padding-right: 12px; color: var(--text); }
-.item-sub { font-family: var(--sans); font-style: italic; font-size: 12px; color: var(--text3); margin-top: 3px; }
+.item-text { flex: 1; font-family: var(--sans); font-size: 14px; font-weight: 500; line-height: 1.4; padding-right: 12px; color: var(--text); }
+.item-sub { font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--text3); margin-top: 3px; }
 
 .item-list { box-shadow: var(--shadow-1); }
 
@@ -548,21 +590,21 @@ html, body {
   letter-spacing: -0.02em;
 }
 .hero-result .verdict {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 16px;
-  font-weight: 400;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
   color: var(--text2);
   margin-top: 18px;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 .hero-result .ref {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
   color: var(--text3);
   margin-top: 8px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 .hero-result .small-num {
   font-family: var(--mono);
@@ -640,7 +682,7 @@ html, body {
   margin-bottom: 12px;
   font-weight: 600;
 }
-.info-card p { font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--text2); }
+.info-card p { font-family: var(--sans); font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--text2); }
 .recommendation {
   display: flex;
   gap: 12px;
@@ -656,7 +698,7 @@ html, body {
   margin-top: 9px;
   flex-shrink: 0;
 }
-.rec-text { font-family: var(--serif); font-size: 15px; line-height: 1.5; color: var(--text2); }
+.rec-text { font-family: var(--sans); font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--text2); }
 
 /* Action bar */
 .action-bar {
@@ -761,8 +803,9 @@ html, body {
 .num-input label {
   display: block;
   font-family: var(--sans);
-  font-style: italic;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--text3);
   margin-bottom: 6px;
 }
@@ -778,7 +821,7 @@ html, body {
   padding: 4px 0;
   border-bottom: 1px solid var(--separator);
 }
-.num-input .unit { font-family: var(--sans); font-style: italic; font-size: 13px; color: var(--text3); margin-left: 6px; }
+.num-input .unit { font-family: var(--sans); font-size: 12px; font-weight: 400; color: var(--text3); margin-left: 6px; }
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 .divider { height: 16px; }
@@ -800,12 +843,12 @@ html, body {
 .result-pink { background: linear-gradient(135deg, #FF2D55, #AF52DE); }
 
 .hint {
-  font-family: var(--serif);
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
   color: var(--text3);
   padding: 8px 16px;
   line-height: 1.5;
-  font-style: italic;
 }
 
 .source-line {
@@ -818,16 +861,36 @@ html, body {
   letter-spacing: 0.04em;
 }
 
-/* Footer note — italic serif "footnote" */
+/* Footer note */
 .footer-note {
   text-align: center;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 13px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
   color: var(--text3);
   padding: 24px 24px 12px;
-  line-height: 1.5;
+  line-height: 1.6;
   text-wrap: pretty;
+}
+.footer-note .footer-meta {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--slate);
+}
+
+/* Signature — appended to every screen */
+.signature {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--slate);
+  padding: 6px 24px calc(20px + var(--safe-bottom));
+  opacity: 0.85;
 }
 
 /* Tables for staging */
@@ -852,13 +915,12 @@ html, body {
 
 <script>
 // ============================================================================
-// EYECALC — Comprehensive ophthalmology / oculoplastics / orbital calculator
 // Educational tool — not a substitute for clinical judgment.
 // ============================================================================
 
 const state = {
   screen: 'home',
-  tab: 'TED',
+  tab: 'Oculoplastics',
   search: '',
 
   // Existing TED state
@@ -1021,14 +1083,14 @@ function recList(items) {
 
 const CALCULATORS = [
   // TED
-  { id: 'cas',         tab: 'TED', title: 'Clinical Activity Score (CAS)', desc: 'Mourits 1989 / EUGOGO · active vs inactive', icon: 'CAS', iconClass: 'ic-cas' },
-  { id: 'eugogo',      tab: 'TED', title: 'EUGOGO Severity', desc: 'Mild / mod-severe / sight-threatening', icon: 'EU<br>GOGO', iconClass: 'ic-eugogo' },
-  { id: 'visa',        tab: 'TED', title: 'VISA Classification', desc: 'Vision · Inflammation · Strabismus · Appearance', icon: 'VISA', iconClass: 'ic-visa' },
-  { id: 'nospecs',     tab: 'TED', title: 'Modified NO SPECS', desc: 'Werner 1977 · class-by-class severity', icon: 'NO<br>SPECS', iconClass: 'ic-nospecs' },
-  { id: 'hertel',      tab: 'TED', title: 'Hertel Exophthalmometry', desc: 'Race/sex normals · asymmetry · proptosis flag', icon: 'HRT', iconClass: 'ic-orbit' },
-  { id: 'barrett',     tab: 'TED', title: "Barrett's Muscle Index", desc: 'CT-based DON risk · threshold ~67%', icon: 'BMI', iconClass: 'ic-orbit' },
-  { id: 'nugent',      tab: 'TED', title: 'Nugent Apical Crowding', desc: 'Coronal CT 0–3 · perineural fat effacement', icon: 'NGT', iconClass: 'ic-orbit' },
-  { id: 'muscleidx',   tab: 'TED', title: 'Muscle Index (V/H)', desc: 'Vertical & horizontal muscle/orbit ratio', icon: 'MI', iconClass: 'ic-orbit' },
+  { id: 'cas',         tab: 'Oculoplastics', title: 'Clinical Activity Score (CAS)', desc: 'Mourits 1989 / EUGOGO · active vs inactive', icon: 'CAS', iconClass: 'ic-cas' },
+  { id: 'eugogo',      tab: 'Oculoplastics', title: 'EUGOGO Severity', desc: 'Mild / mod-severe / sight-threatening', icon: 'EU<br>GOGO', iconClass: 'ic-eugogo' },
+  { id: 'visa',        tab: 'Oculoplastics', title: 'VISA Classification', desc: 'Vision · Inflammation · Strabismus · Appearance', icon: 'VISA', iconClass: 'ic-visa' },
+  { id: 'nospecs',     tab: 'Oculoplastics', title: 'Modified NO SPECS', desc: 'Werner 1977 · class-by-class severity', icon: 'NO<br>SPECS', iconClass: 'ic-nospecs' },
+  { id: 'hertel',      tab: 'Oculoplastics', title: 'Hertel Exophthalmometry', desc: 'Race/sex normals · asymmetry · proptosis flag', icon: 'HRT', iconClass: 'ic-orbit' },
+  { id: 'barrett',     tab: 'Oculoplastics', title: "Barrett's Muscle Index", desc: 'CT-based DON risk · threshold ~67%', icon: 'BMI', iconClass: 'ic-orbit' },
+  { id: 'nugent',      tab: 'Oculoplastics', title: 'Nugent Apical Crowding', desc: 'Coronal CT 0–3 · perineural fat effacement', icon: 'NGT', iconClass: 'ic-orbit' },
+  { id: 'muscleidx',   tab: 'Oculoplastics', title: 'Muscle Index (V/H)', desc: 'Vertical & horizontal muscle/orbit ratio', icon: 'MI', iconClass: 'ic-orbit' },
 
   // Oculoplastics — Eyelid (B)
   { id: 'mrd',         tab: 'Oculoplastics', title: 'MRD1 / MRD2 / MRD3 + PFH', desc: 'Ptosis grade · palpebral fissure', icon: 'MRD', iconClass: 'ic-eyelid' },
@@ -1133,17 +1195,11 @@ const CALCULATORS = [
   { id: 'onsd-icp',    tab: 'Neuro', title: 'ONSD → ICP nomogram', desc: 'mm → mmHg estimate', icon: 'ICP', iconClass: 'ic-neuro' },
 ];
 
-const TABS = ['TED', 'Oculoplastics', 'General', 'Refractive', 'Glaucoma', 'Retina', 'Pediatric', 'Cornea', 'Neuro'];
+const TABS = ['Oculoplastics', 'General', 'Refractive', 'Glaucoma', 'Retina', 'Pediatric', 'Cornea', 'Neuro'];
 
 // ============================================================================
 // HOME SCREEN
 // ============================================================================
-
-function calcLetter(c) {
-  // Pull the first uppercase letter from the title for the monogram.
-  const m = (c.title || '').match(/[A-Za-z]/);
-  return m ? m[0].toUpperCase() : '·';
-}
 
 function calcFamilyLabel(c) {
   // Short italic caption under each tile. First clause of desc.
@@ -1154,40 +1210,30 @@ function calcFamilyLabel(c) {
 function tileMarkup(c) {
   return `
     <button class="tile" onclick="navigate('${c.id}', { resetInputs: true })">
-      <div class="tile-letter">${calcLetter(c)}</div>
-      <div>
-        <div class="tile-name">${c.title}</div>
-        <div class="tile-fam">${calcFamilyLabel(c)}</div>
-      </div>
+      <div class="tile-name">${c.title}</div>
+      <div class="tile-fam">${calcFamilyLabel(c)}</div>
     </button>
   `;
 }
 
 function renderHome() {
-  const tabPills = TABS.map(t => `<button class="tab-pill ${state.tab === t ? 'active' : ''}" onclick="setTab('${t}')">${t}</button>`).join('');
-
   const q = state.search.toLowerCase().trim();
   const searching = q.length > 0;
   const list = searching
     ? CALCULATORS.filter(c => c.title.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q) || c.tab.toLowerCase().includes(q))
     : CALCULATORS.filter(c => c.tab === state.tab);
 
-  // When searching, render flat. When browsing a tab, also flat (the tab IS the section).
-  // The eyebrow above the grid names the current section.
   const sectionTitle = searching ? `Search · "${state.search}"` : state.tab;
+  const sectionOptions = TABS.map(t =>
+    `<option value="${t}" ${state.tab === t ? 'selected' : ''}>${t} · ${CALCULATORS.filter(c => c.tab === t).length}</option>`
+  ).join('');
 
   return `
     ${navbar({ title: 'EyeCalc' })}
     <div class="app-header">
       <img class="app-logo" src="eye_score_logo_clean_white.png" alt="EyeCalc logo">
-      <div>
-        <div class="eyebrow" style="padding:0 0 4px;">EyeCalc · ${CALCULATORS.length} tools</div>
-        <div class="large-title" style="padding:0;">Calculators</div>
-      </div>
+      <div class="large-title" style="padding:0;">Calculators</div>
     </div>
-    <div class="subtitle">Ophthalmology · oculoplastics · orbital radiology — quietly bound into the device in your pocket.</div>
-
-    <div class="tab-bar">${tabPills}</div>
 
     <div class="scroll" style="padding: 0 16px calc(40px + var(--safe-bottom));">
       <div class="search-bar">
@@ -1196,7 +1242,17 @@ function renderHome() {
                oninput="state.search = this.value; render(); setTimeout(()=>{document.querySelector('.search-bar input')?.focus();},0)">
       </div>
 
-      <div class="section-header" style="padding: 18px 8px 12px;">
+      <div class="section-toggle">
+        <label class="section-toggle-label">Section</label>
+        <div class="section-toggle-control">
+          <select onchange="setTab(this.value)" ${searching ? 'disabled' : ''}>
+            ${sectionOptions}
+          </select>
+          <span class="section-toggle-chevron">▾</span>
+        </div>
+      </div>
+
+      <div class="section-header" style="padding: 16px 4px 12px;">
         <span>${sectionTitle}</span>
         <span class="count">${list.length}</span>
       </div>
@@ -1207,7 +1263,7 @@ function renderHome() {
 
       <div class="footer-note">
         Decision support only. Verify all thresholds against primary sources before clinical use.<br>
-        <span style="font-family: var(--mono); font-style: normal; font-size: 11px; letter-spacing: 0.04em; color: var(--slate);">
+        <span class="footer-meta">
           EyeCalc v2 · ${CALCULATORS.length} calculators · ${TABS.length} specialties
         </span>
       </div>
@@ -4235,7 +4291,12 @@ function render() {
     case 'onsd-icp': html = renderONSDICP(); break;
     default: html = renderHome();
   }
-  app.innerHTML = html;
+  app.innerHTML = html + signatureMarkup();
+}
+
+const APP_LAST_UPDATE = 'May 2026';
+function signatureMarkup() {
+  return `<div class="signature">SB · ${APP_LAST_UPDATE}</div>`;
 }
 
 render();
