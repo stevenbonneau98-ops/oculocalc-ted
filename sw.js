@@ -1,5 +1,5 @@
 // EyeCalc Service Worker — caches everything for offline use.
-const CACHE = 'eyecalc-v2-3-0';
+const CACHE = 'eyecalc-v2-5-3';
 const FILES = [
   './',
   './index.html',
@@ -14,6 +14,13 @@ const FILES = [
   './assets/frisen/frisen-3.jpg',
   './assets/frisen/frisen-4.jpg',
   './assets/frisen/frisen-5.jpg',
+  './assets/oculoplastics/barrett-mi.png',
+  './assets/oculoplastics/lid-retraction.jpg',
+  './assets/oculoplastics/lagophthalmos-1.jpg',
+  './assets/oculoplastics/lagophthalmos-2.jpg',
+  './assets/oculoplastics/exposure-kerat.jpg',
+  './assets/oculoplastics/facial-palsy-1.jpg',
+  './assets/oculoplastics/facial-palsy-2.jpg',
 ];
 
 self.addEventListener('install', (e) => {

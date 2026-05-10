@@ -131,6 +131,19 @@ html, body {
   font-weight: 400;
 }
 .nav-back svg { width: 12px; height: 20px; }
+.nav-home {
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--signal);
+  background: transparent;
+  transition: background 0.15s var(--ease-ios), transform 0.12s var(--ease-ios);
+}
+.nav-home:hover { background: var(--mist); }
+.nav-home:active { transform: scale(0.92); }
+.nav-home svg { display: block; }
 .nav-title { font-family: var(--sans); font-size: 15px; font-weight: 500; letter-spacing: 0.02em; color: var(--text); }
 .nav-spacer { min-width: 60px; }
 
@@ -450,6 +463,61 @@ html, body {
   justify-content: space-between;
 }
 .section-header .count { font-family: var(--mono); font-size: 11px; letter-spacing: 0; font-weight: 400; }
+
+/* Subcategory wrapper — each subgroup gets its own tinted card */
+.sub-group {
+  border-radius: 16px;
+  padding: 4px 14px 14px;
+  margin: 12px 0;
+  border: 1px solid var(--separator);
+}
+.sub-group .tile-grid { margin-bottom: 0; }
+.sub-group .tile { box-shadow: 0 1px 2px rgba(10,31,68,0.04); }
+
+/* Subcategory header — between groups inside a tab */
+.sub-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 4px 12px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text2);
+}
+.sub-header .count {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text3);
+}
+
+/* Cycled tint palette — light mode */
+.sub-group-0 { background: #EEF3FF; }   /* soft blue */
+.sub-group-1 { background: #FBEEEC; }   /* warm rose */
+.sub-group-2 { background: #FBF3DD; }   /* pale amber */
+.sub-group-3 { background: #E9F5EE; }   /* pale mint */
+.sub-group-4 { background: #F1ECFB; }   /* pale lavender */
+.sub-group-5 { background: #E6F4F4; }   /* pale aqua */
+.sub-group-6 { background: #FBEDDF; }   /* pale rose-gold */
+
+/* Make the accent letter / tile bg stay legible on tints */
+.sub-group .tile { background: var(--surface); }
+
+@media (prefers-color-scheme: dark) {
+  .sub-group { border-color: rgba(255,255,255,0.06); }
+  .sub-group-0 { background: rgba(77,163,255,0.08); }
+  .sub-group-1 { background: rgba(255,138,120,0.08); }
+  .sub-group-2 { background: rgba(255,200,100,0.07); }
+  .sub-group-3 { background: rgba(120,220,170,0.07); }
+  .sub-group-4 { background: rgba(180,160,240,0.08); }
+  .sub-group-5 { background: rgba(120,200,200,0.08); }
+  .sub-group-6 { background: rgba(255,180,140,0.08); }
+  .sub-group .tile { background: var(--card); }
+}
 
 /* Item lists (tappable rows) */
 .item-list {
@@ -881,34 +949,35 @@ html, body {
   color: var(--slate);
 }
 
-/* Frisén papilledema photo card + gallery */
-.frisen-photo-card {
+/* Generic photo card — reused across Frisén + all oculoplastics */
+.photo-card {
   background: var(--card);
   border-radius: 12px;
   overflow: hidden;
   margin: 8px 0 12px;
   box-shadow: var(--shadow-1);
 }
-.frisen-photo-card img {
+.photo-card img {
   width: 100%;
   height: auto;
   display: block;
   background: #000;
 }
-.frisen-photo-caption {
+.photo-caption {
   font-family: var(--sans);
   font-size: 12px;
   color: var(--text3);
   padding: 10px 14px;
   border-top: 1px solid var(--separator);
 }
-.frisen-gallery {
+.photo-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   margin: 4px 0 10px;
 }
-.frisen-thumb {
+.photo-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.photo-thumb {
   background: transparent;
   border: 1.5px solid var(--separator);
   border-radius: 8px;
@@ -919,17 +988,17 @@ html, body {
   font-family: inherit;
   transition: border-color 0.15s var(--ease-ios), transform 0.12s var(--ease-ios);
 }
-.frisen-thumb:hover { border-color: var(--separator-strong); }
-.frisen-thumb:active { transform: scale(0.97); }
-.frisen-thumb.active { border-color: var(--signal); border-width: 2px; }
-.frisen-thumb img {
+.photo-thumb:hover { border-color: var(--separator-strong); }
+.photo-thumb:active { transform: scale(0.97); }
+.photo-thumb.active { border-color: var(--signal); border-width: 2px; }
+.photo-thumb img {
   width: 100%;
   aspect-ratio: 1 / 1;
   object-fit: cover;
   display: block;
   background: #000;
 }
-.frisen-thumb span {
+.photo-thumb span {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -943,15 +1012,15 @@ html, body {
   background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
   text-align: left;
 }
-.frisen-credit {
+.photo-credit {
   font-family: var(--sans);
   font-size: 11px;
   color: var(--text3);
   line-height: 1.5;
   margin-top: 8px;
 }
-.frisen-credit a { color: var(--signal); text-decoration: none; }
-.frisen-credit a:hover { text-decoration: underline; }
+.photo-credit a { color: var(--signal); text-decoration: none; }
+.photo-credit a:hover { text-decoration: underline; }
 
 /* Signature — appended to every screen */
 .signature {
@@ -1008,6 +1077,7 @@ const state = {
 const ICONS = {
   back: '<svg viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   search: '<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M11 6.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0zm-.82 4.74a6 6 0 1 1 1.06-1.06l3.04 3.04a.75.75 0 1 1-1.06 1.06l-3.04-3.04z"/></svg>',
+  home: '<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11L11 3L19 11"/><path d="M5 10v8a1 1 0 0 0 1 1h3v-5h4v5h3a1 1 0 0 0 1-1v-8"/></svg>',
 };
 
 // ============================================================================
@@ -1016,13 +1086,39 @@ const ICONS = {
 
 function navigate(screen, opts) {
   state.screen = screen;
-  if (opts && opts.resetInputs) state.inp = {};
+  if (opts && opts.resetInputs) { state.inp = {}; state.inpRaw = {}; }
   window.scrollTo(0, 0);
   render();
 }
 function setTab(tab) { state.tab = tab; state.screen = 'home'; state.search = ''; render(); }
 function setInp(k, v) { state.inp[k] = v; render(); }
 function setInpNoRender(k, v) { state.inp[k] = v; }
+
+// Silently update an input — no re-render. Caret stays put because the input element
+// is never destroyed mid-keystroke. The result block refreshes on blur / Enter.
+function setInpSilent(k, v, raw) {
+  state.inp[k] = v;
+  state.inpRaw = state.inpRaw || {};
+  state.inpRaw[k] = raw;
+}
+
+// Called on input blur or Enter key — re-renders to update the result block.
+function commitInput() { render(); }
+
+// Search bar — re-renders on every keystroke (needed for live filtering),
+// but properly captures and restores caret position so typing flows L→R.
+function setSearch(v, inputEl) {
+  state.search = v;
+  const caret = inputEl ? inputEl.selectionStart : null;
+  render();
+  const el = document.querySelector('.search-bar input');
+  if (el) {
+    el.focus();
+    if (caret != null && typeof el.setSelectionRange === 'function') {
+      try { el.setSelectionRange(caret, caret); } catch (_) {}
+    }
+  }
+}
 
 window.addEventListener('popstate', () => render());
 
@@ -1031,11 +1127,18 @@ window.addEventListener('popstate', () => render());
 // ============================================================================
 
 function navbar({ back, title, action }) {
+  // Home icon in the right slot whenever there's no custom action AND we're not already on home.
+  const showHome = !action && state.screen !== 'home';
+  const right = action
+    ? `<button class="nav-action" onclick="${action.onclick}">${action.label}</button>`
+    : showHome
+      ? `<button class="nav-action nav-home" onclick="navigate('home')" aria-label="Home">${ICONS.home}</button>`
+      : '<div class="nav-spacer"></div>';
   return `
     <div class="navbar">
       ${back ? `<button class="nav-back" onclick="navigate('${back.to}')">${ICONS.back}${back.label}</button>` : '<div class="nav-spacer"></div>'}
       <div class="nav-title">${title || ''}</div>
-      ${action ? `<button class="nav-action" onclick="${action.onclick}">${action.label}</button>` : '<div class="nav-spacer"></div>'}
+      ${right}
     </div>
   `;
 }
@@ -1045,11 +1148,17 @@ function actionBar(buttons) {
 }
 
 function numInput(label, key, opts = {}) {
-  const v = state.inp[key] !== undefined ? state.inp[key] : (opts.default !== undefined ? opts.default : '');
+  const raw = state.inpRaw && state.inpRaw[key];
+  const v = raw !== undefined
+    ? raw
+    : (state.inp[key] !== undefined ? state.inp[key] : (opts.default !== undefined ? opts.default : ''));
   return `
     <div class="num-input">
       <label>${label}${opts.unit ? ` <span class="unit">${opts.unit}</span>` : ''}</label>
-      <input type="number" inputmode="decimal" step="${opts.step || 'any'}" value="${v}" placeholder="${opts.placeholder || ''}" oninput="setInpNoRender('${key}', this.value === '' ? '' : parseFloat(this.value)); renderResultArea && renderResultArea();">
+      <input type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${v}" placeholder="${opts.placeholder || ''}" data-key="${key}"
+        oninput="setInpSilent('${key}', this.value === '' ? '' : parseFloat(this.value), this.value)"
+        onblur="commitInput()"
+        onkeydown="if (event.key === 'Enter') { this.blur(); }">
     </div>
   `;
 }
@@ -1149,6 +1258,38 @@ function recList(items) {
   return items.map(r => `<div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">${r}</div></div>`).join('');
 }
 
+// Photo card: single image with caption.
+function photoCard(src, caption) {
+  return `
+    <div class="photo-card">
+      <img src="${src}" alt="${caption.replace(/"/g, '&quot;')}" loading="lazy">
+      <div class="photo-caption">${caption}</div>
+    </div>`;
+}
+
+// Photo strip: 2- or 3-column gallery of clinical photos with captions.
+function photoStrip(items, cols = 2) {
+  return `
+    <div class="photo-grid${cols === 2 ? ' cols-2' : ''}">
+      ${items.map(it => `
+        <div class="photo-thumb" style="cursor:default;">
+          <img src="${it.src}" alt="${(it.caption || '').replace(/"/g, '&quot;')}" loading="lazy">
+          ${it.label ? `<span>${it.label}</span>` : ''}
+        </div>`).join('')}
+    </div>`;
+}
+
+// Standard EyeRounds CC BY-NC-ND 3.0 attribution.
+function eyeroundsCredit(slug) {
+  const url = slug ? `https://eyerounds.org/${slug}` : 'https://eyerounds.org';
+  return `
+    <p class="photo-credit">
+      Clinical photographs © <a href="${url}" target="_blank" rel="noopener">EyeRounds.org</a>,
+      The University of Iowa — used under
+      <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank" rel="noopener">CC BY-NC-ND 3.0</a>.
+    </p>`;
+}
+
 // ============================================================================
 // CALCULATOR REGISTRY (for tabs + search)
 // ============================================================================
@@ -1176,16 +1317,14 @@ const CALCULATORS = [
   { id: 'munk',        tab: 'Oculoplastics', title: 'Munk epiphora score', desc: 'Tearing frequency 0–4', icon: 'MNK', iconClass: 'ic-lacrimal' },
   { id: 'ddt',         tab: 'Oculoplastics', title: 'Dye disappearance test', desc: 'Fluorescein 0–4 grading', icon: 'DDT', iconClass: 'ic-lacrimal' },
   { id: 'jones',       tab: 'Oculoplastics', title: 'Jones I / II interpreter', desc: 'Lacrimal drainage diagnostic algorithm', icon: 'JNS', iconClass: 'ic-lacrimal' },
-  { id: 'osdi',        tab: 'Oculoplastics', title: 'OSDI', desc: 'Ocular Surface Disease Index 0–100', icon: 'OSDI', iconClass: 'ic-lacrimal' },
-  { id: 'speed',       tab: 'Oculoplastics', title: 'SPEED', desc: 'Standardized eye dryness 0–28', icon: 'SPD', iconClass: 'ic-lacrimal' },
-  { id: 'schirmer',    tab: 'Oculoplastics', title: 'Schirmer / TBUT', desc: 'TFOS DEWS II cutoffs', icon: 'SCH', iconClass: 'ic-lacrimal' },
-  { id: 'dewsii',      tab: 'Oculoplastics', title: 'DEWS II severity stage', desc: 'Dry eye severity 1–4', icon: 'DWS', iconClass: 'ic-lacrimal' },
+  { id: 'osdi',        tab: 'Cornea', title: 'OSDI', desc: 'Ocular Surface Disease Index 0–100', icon: 'OSDI', iconClass: 'ic-lacrimal' },
+  { id: 'speed',       tab: 'Cornea', title: 'SPEED', desc: 'Standardized eye dryness 0–28', icon: 'SPD', iconClass: 'ic-lacrimal' },
+  { id: 'schirmer',    tab: 'Cornea', title: 'Schirmer / TBUT', desc: 'TFOS DEWS II cutoffs', icon: 'SCH', iconClass: 'ic-lacrimal' },
+  { id: 'dewsii',      tab: 'Cornea', title: 'DEWS II severity stage', desc: 'Dry eye severity 1–4', icon: 'DWS', iconClass: 'ic-lacrimal' },
 
   // Oculoplastics — Trauma/Infection/Onco/Facial (D)
   { id: 'chandler',    tab: 'Oculoplastics', title: 'Chandler classification', desc: 'Orbital cellulitis I–V', icon: 'CHD', iconClass: 'ic-trauma' },
-  { id: 'trapdoor',    tab: 'Oculoplastics', title: 'White-eyed/trapdoor decision', desc: 'Pediatric red flags · urgency', icon: 'TRP', iconClass: 'ic-trauma' },
   { id: 'floor',       tab: 'Oculoplastics', title: 'Orbital floor surgical indications', desc: '>50% floor · enophthalmos · diplopia', icon: 'FLR', iconClass: 'ic-trauma' },
-  { id: 'enophthal',   tab: 'Oculoplastics', title: 'Enophthalmos ↔ orbital volume', desc: '1 cm³ ≈ 0.8 mm enophthalmos', icon: 'ENO', iconClass: 'ic-trauma' },
   { id: 'tnm-eyelid',  tab: 'Oculoplastics', title: 'AJCC 8 — Eyelid carcinoma', desc: 'BCC/SCC/sebaceous/Merkel TNM', icon: 'T-E', iconClass: 'ic-onco' },
   { id: 'tnm-conj-scc',tab: 'Oculoplastics', title: 'AJCC 8 — Conjunctival SCC', desc: 'Conjunctival carcinoma TNM', icon: 'T-C', iconClass: 'ic-onco' },
   { id: 'tnm-conj-mel',tab: 'Oculoplastics', title: 'AJCC 8 — Conjunctival melanoma', desc: 'Conjunctival melanoma TNM', icon: 'T-M', iconClass: 'ic-onco' },
@@ -1269,6 +1408,53 @@ const CALCULATORS = [
 
 const TABS = ['Oculoplastics', 'General', 'Refractive', 'Glaucoma', 'Retina', 'Pediatric', 'Cornea', 'Neuro'];
 
+// Subcategory mapping by calculator id. Calculators not listed have no subcategory
+// (and tabs without multiple groups render flat).
+const SUBS = {
+  // Oculoplastics
+  cas: 'TED', eugogo: 'TED', visa: 'TED', nospecs: 'TED',
+  hertel: 'TED', barrett: 'TED', nugent: 'TED', muscleidx: 'TED',
+  mrd: 'Eyelid & ptosis', levator: 'Eyelid & ptosis', brow: 'Eyelid & ptosis',
+  lagoph: 'Eyelid & ptosis', goldweight: 'Eyelid & ptosis', lowerlid: 'Eyelid & ptosis',
+  munk: 'Epiphora', ddt: 'Epiphora', jones: 'Epiphora',
+  osdi: 'Dry eye / OSD', speed: 'Dry eye / OSD', schirmer: 'Dry eye / OSD', dewsii: 'Dry eye / OSD',
+  // (above 4 now live under Cornea tab — sub label preserved)
+  ulcer123: 'Cornea', 'kc-ak': 'Cornea', 'cl-bc': 'Cornea',
+  chandler: 'Orbit & trauma', floor: 'Orbit & trauma',
+  'tnm-eyelid': 'Onco (TNM)', 'tnm-conj-scc': 'Onco (TNM)', 'tnm-conj-mel': 'Onco (TNM)',
+  'tnm-skin-mel': 'Onco (TNM)', 'tnm-lacgland': 'Onco (TNM)',
+  'tnm-lacsac': 'Onco (TNM)', 'tnm-orbsarc': 'Onco (TNM)',
+  house: 'Facial nerve', sunny: 'Facial nerve',
+  // Refractive
+  iolpicker: 'IOL formulas', srk2: 'IOL formulas', postref: 'IOL formulas', toric: 'IOL formulas',
+  lasik: 'Refractive surgery & cornea', ecd: 'Refractive surgery & cornea',
+  // Glaucoma
+  ohts: 'Risk & target IOP', ccticp: 'Risk & target IOP', targetiop: 'Risk & target IOP',
+  mdrate: 'Visual field & progression', agis: 'Visual field & progression',
+  hpa: 'Visual field & progression', icd11: 'Visual field & progression',
+  ddls: 'Disc & angle', spaeth: 'Disc & angle', shaffer: 'Disc & angle',
+  vanherick: 'Disc & angle', pxfpds: 'Disc & angle',
+  // Retina
+  drss: 'Diabetic retinopathy', intldr: 'Diabetic retinopathy',
+  areds: 'AMD', gass: 'Macula',
+  'sun-cells': 'Uveitis (SUN)', 'sun-flare': 'Uveitis (SUN)', 'vit-haze': 'Uveitis (SUN)',
+  // Pediatric
+  hirschberg: 'Strabismus & orthoptics', worth4: 'Strabismus & orthoptics',
+  amblyopia: 'Strabismus & orthoptics', acaratio: 'Strabismus & orthoptics',
+  rop: 'ROP', etrop: 'ROP',
+  congcat: 'Cataract & red reflex', bruckner: 'Cataract & red reflex',
+  pedva: 'Norms', pedrx: 'Norms', pediop: 'Norms',
+  // Neuro
+  onsd: 'Optic nerve & papilledema', frisen: 'Optic nerve & papilledema',
+  'onsd-icp': 'Optic nerve & papilledema', ontrial: 'Optic nerve & papilledema',
+  'iih-dandy': 'Optic nerve & papilledema', gca: 'Optic nerve & papilledema',
+  rapd: 'Pupils', pupil: 'Pupils',
+  cnpalsy: 'Cranial nerves & motility', parks3: 'Cranial nerves & motility', nihss: 'Cranial nerves & motility',
+  orbvol: 'Imaging',
+};
+
+function calcSub(c) { return SUBS[c.id] || ''; }
+
 // ============================================================================
 // HOME SCREEN
 // ============================================================================
@@ -1288,6 +1474,18 @@ function tileMarkup(c) {
   `;
 }
 
+function groupBySub(list) {
+  // Returns { order: [subName, ...], groups: { subName: [calc, ...] } }
+  // Preserves the order in which subs are first encountered (i.e. registry order).
+  const groups = {}, order = [];
+  list.forEach(c => {
+    const s = calcSub(c);
+    if (!(s in groups)) { groups[s] = []; order.push(s); }
+    groups[s].push(c);
+  });
+  return { order, groups };
+}
+
 function renderHome() {
   const q = state.search.toLowerCase().trim();
   const searching = q.length > 0;
@@ -1300,18 +1498,38 @@ function renderHome() {
     `<option value="${t}" ${state.tab === t ? 'selected' : ''}>${t} · ${CALCULATORS.filter(c => c.tab === t).length}</option>`
   ).join('');
 
+  // Group by subcategory unless searching (search results stay flat).
+  const { order, groups } = groupBySub(list);
+  const hasSubs = !searching && order.length > 1;
+
+  const listMarkup = list.length === 0
+    ? '<div class="hint" style="text-align:center;padding:32px 16px;">No calculators match.</div>'
+    : hasSubs
+      ? order.map((s, i) => `
+          <section class="sub-group sub-group-${i % 7}">
+            ${s ? `
+              <div class="sub-header">
+                <span>${s}</span>
+                <span class="count">${groups[s].length}</span>
+              </div>` : ''}
+            <div class="tile-grid">${groups[s].map(tileMarkup).join('')}</div>
+          </section>
+        `).join('')
+      : `<div class="tile-grid">${list.map(tileMarkup).join('')}</div>`;
+
   return `
-    ${navbar({ title: 'EyeCalc' })}
+    ${navbar({ title: '' })}
     <div class="app-header">
       <img class="app-logo" src="eye_score_logo_clean_white.png" alt="EyeCalc logo">
-      <div class="large-title" style="padding:0;">Calculators</div>
+      <div class="large-title" style="padding:0;">EyeCalc</div>
     </div>
 
     <div class="scroll" style="padding: 0 16px calc(40px + var(--safe-bottom));">
       <div class="search-bar">
         <span class="search-icon">${ICONS.search}</span>
         <input type="text" placeholder="Search ${CALCULATORS.length} calculators…" value="${state.search}"
-               oninput="state.search = this.value; render(); setTimeout(()=>{document.querySelector('.search-bar input')?.focus();},0)">
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               oninput="setSearch(this.value, this)">
       </div>
 
       <div class="section-toggle">
@@ -1329,9 +1547,7 @@ function renderHome() {
         <span class="count">${list.length}</span>
       </div>
 
-      ${list.length === 0
-        ? '<div class="hint" style="text-align:center;padding:32px 16px;">No calculators match.</div>'
-        : `<div class="tile-grid">${list.map(tileMarkup).join('')}</div>`}
+      ${listMarkup}
 
       <div class="footer-note">
         Decision support only. Verify all thresholds against primary sources before clinical use.<br>
@@ -1939,7 +2155,9 @@ function renderHertel() {
 function renderBarrett() {
   const orbW = num('barrOrbW'), orbH = num('barrOrbH');
   const lat = num('barrLat'), med = num('barrMed'), sup = num('barrSup'), inf = num('barrInf');
-  let body = numInput('Orbital width (axial CT, at maximum globe equator)', 'barrOrbW', { unit: 'mm' })
+  let body = photoCard('assets/oculoplastics/barrett-mi.png',
+      "Coronal CT measurement scheme — Horizontal index = (A + B) ÷ C × 100 % · Vertical index = (D + E) ÷ F × 100 %.")
+    + numInput('Orbital width (axial CT, at maximum globe equator)', 'barrOrbW', { unit: 'mm' })
     + numInput('Orbital height (coronal CT)', 'barrOrbH', { unit: 'mm' })
     + `<div class="section-header">Muscle widths (max diameter)</div>`
     + `<div class="row-2">${numInput('Lateral rectus', 'barrLat', { unit: 'mm' })}${numInput('Medial rectus', 'barrMed', { unit: 'mm' })}</div>`
@@ -2135,7 +2353,13 @@ function renderBrow() {
 function renderLagoph() {
   const gentle = num('lagGentle'), forced = num('lagForced'), inf = num('lagSI');
   const bell = !!state.inp.lagBell, sens = !!state.inp.lagSens;
-  let body = numInput('Gentle closure gap', 'lagGentle', { unit: 'mm', step: '0.5' })
+  let body = photoStrip([
+      { src: 'assets/oculoplastics/lagophthalmos-1.jpg', label: 'Closure gap' },
+      { src: 'assets/oculoplastics/lagophthalmos-2.jpg', label: 'Forced closure' },
+      { src: 'assets/oculoplastics/exposure-kerat.jpg', label: 'Keratopathy' },
+    ], 3)
+    + eyeroundsCredit('tutorials/thyroid-eye-disease/2-clinical-presentation.htm')
+    + numInput('Gentle closure gap', 'lagGentle', { unit: 'mm', step: '0.5' })
     + numInput('Forced closure gap', 'lagForced', { unit: 'mm', step: '0.5' })
     + numInput('Inferior scleral show (primary gaze)', 'lagSI', { unit: 'mm', step: '0.5' })
     + toggleInput('Bell\'s phenomenon present', 'lagBell', 'Globe rolls upward on attempted closure — protective')
@@ -2204,7 +2428,10 @@ function renderGoldweight() {
 function renderLowerLid() {
   const mrd2 = num('llMrd2'), si = num('llSI');
   const laxity = val('llLax', 'normal');
-  let body = numInput('MRD2', 'llMrd2', { unit: 'mm', step: '0.5', placeholder: 'normal 5–6' })
+  let body = photoCard('assets/oculoplastics/lid-retraction.jpg',
+      'Lower-lid retraction with inferior scleral show — measure MRD2 (lower-lid margin to corneal light reflex).')
+    + eyeroundsCredit('tutorials/thyroid-eye-disease/2-clinical-presentation.htm')
+    + numInput('MRD2', 'llMrd2', { unit: 'mm', step: '0.5', placeholder: 'normal 5–6' })
     + numInput('Inferior scleral show in primary gaze', 'llSI', { unit: 'mm', step: '0.5' })
     + selectInput('Lower-lid laxity (snap-back / distraction)', 'llLax', [
       {v:'normal',l:'Normal'},
@@ -2446,38 +2673,6 @@ function renderChandler() {
 }
 
 // ============================================================================
-// D2. White-eyed / trapdoor decision tool
-// ============================================================================
-function renderTrapdoor() {
-  const peds = !!state.inp.tdPed;
-  const minExt = !!state.inp.tdMin;
-  const oculoCardiac = !!state.inp.tdOCR;
-  const restrict = !!state.inp.tdRestr;
-  const enophth = num('tdEno');
-  let body = toggleInput('Pediatric (<18 y)', 'tdPed', '')
-    + toggleInput('Minimal external trauma signs', 'tdMin', 'Quiet eye despite mechanism')
-    + toggleInput('Oculocardiac reflex (bradycardia / nausea / vomiting)', 'tdOCR', 'Triggered by entrapped muscle')
-    + toggleInput('Restricted upgaze / ductions', 'tdRestr', '')
-    + numInput('Enophthalmos (initial)', 'tdEno', { unit: 'mm', step: '0.5' });
-
-  const flags = [];
-  if (peds && minExt && (oculoCardiac || restrict)) flags.push('⚠ White-eyed pediatric blowout — IMMEDIATE repair (within 24–48 h).');
-  if (oculoCardiac) flags.push('⚠ Oculocardiac reflex — emergent repair to avoid bradyarrhythmia.');
-  if (enophth !== null && enophth > 2) flags.push('Enophthalmos >2 mm — early repair indication.');
-  if (restrict) flags.push('Persistent restriction — strong indication for surgical exploration.');
-
-  if (flags.length) {
-    body += resultBlock({ tone: 'red', small: '⚠ EARLY / IMMEDIATE REPAIR', verdict: '', ref: 'Trapdoor red flags present' });
-    body += infoCard('Red flags', recList(flags));
-  } else {
-    body += resultBlock({ tone: 'green', small: 'Observe', verdict: 'No emergent indication', ref: 'Reassess at 1–2 weeks.' });
-  }
-  body += infoCard('Surgical timing', `<p style="line-height:1.6;">Pediatric trapdoor: repair within 24–48 h to prevent muscle fibrosis. Adult floor fractures: typically wait 1–2 weeks for edema to settle, with repair within 14 days.</p>`);
-  body += sourceLine('Egbert et al. 2000; AAO Eyenet 2018 paradigm editorial.');
-  return calcShell('White-eyed / trapdoor', 'Pediatric red-flag decision tool', body, 'Oculoplastics');
-}
-
-// ============================================================================
 // D3. Orbital floor surgical indications
 // ============================================================================
 function renderFloor() {
@@ -2503,28 +2698,6 @@ function renderFloor() {
   }
   body += sourceLine('AAO BCSC vol 7; Burnstine 2002 indications review.');
   return calcShell('Orbital floor surgical indications', 'Repair vs observation', body, 'Oculoplastics');
-}
-
-// ============================================================================
-// D4. Enophthalmos ↔ orbital volume
-// ============================================================================
-function renderEnophthal() {
-  const eno = num('evEno'), vol = num('evVol');
-  let body = `<div class="hint">Approximation: 1 cm³ orbital volume increase ≈ 0.8 mm enophthalmos (Manson, Whitehouse).</div>`
-    + numInput('Enophthalmos (mm) — leave blank to compute from volume', 'evEno', { unit: 'mm', step: '0.5' })
-    + numInput('Orbital volume increase (cm³) — leave blank to compute from enophthalmos', 'evVol', { unit: 'cm³', step: '0.1' });
-
-  let predEno = null, predVol = null;
-  if (eno !== null && (vol === null)) predVol = (eno / 0.8).toFixed(2);
-  if (vol !== null && (eno === null)) predEno = (vol * 0.8).toFixed(2);
-
-  if (predEno !== null) {
-    body += resultBlock({ tone: 'blue', small: `${predEno} mm`, verdict: 'PREDICTED ENOPHTHALMOS', ref: `From ${vol} cm³ volume increase` });
-  } else if (predVol !== null) {
-    body += resultBlock({ tone: 'blue', small: `${predVol} cm³`, verdict: 'PREDICTED VOLUME INCREASE', ref: `From ${eno} mm enophthalmos` });
-  }
-  body += sourceLine('Manson et al. 1986; Whitehouse 1994; PMC 504886.');
-  return calcShell('Enophthalmos ↔ orbital volume', 'Approximate conversion', body, 'Oculoplastics');
 }
 
 // ============================================================================
@@ -2683,7 +2856,10 @@ function renderTNMOrbSarc() {
 // ============================================================================
 function renderHouse() {
   const g = val('hb', 1);
-  let body = stepperInput('House-Brackmann grade', 'hb', [
+  let body = photoCard('assets/oculoplastics/facial-palsy-1.jpg',
+      'Left facial nerve palsy with lower-lid retraction, inferior scleral show, and lagophthalmos on attempted closure — typical Grade IV–V appearance.')
+    + eyeroundsCredit('cases/215-facial-nerve.htm')
+    + stepperInput('House-Brackmann grade', 'hb', [
     { v: 1, l: 'I' }, { v: 2, l: 'II' }, { v: 3, l: 'III' }, { v: 4, l: 'IV' }, { v: 5, l: 'V' }, { v: 6, l: 'VI' }
   ], { default: 1 });
   const data = {
@@ -2705,7 +2881,12 @@ function renderHouse() {
 // ============================================================================
 function renderSunny() {
   const rest = num('sbRest'), volun = num('sbVol'), syn = num('sbSyn');
-  let body = `<div class="hint">Sunnybrook = (Voluntary Movement × 4) − (Resting Symmetry × 5) − Synkinesis. Range 0–100 (100 = normal).</div>`
+  let body = photoStrip([
+      { src: 'assets/oculoplastics/facial-palsy-1.jpg', label: 'Initial' },
+      { src: 'assets/oculoplastics/facial-palsy-2.jpg', label: '5-month f/u' },
+    ], 2)
+    + eyeroundsCredit('cases/215-facial-nerve.htm')
+    + `<div class="hint">Sunnybrook = (Voluntary Movement × 4) − (Resting Symmetry × 5) − Synkinesis. Range 0–100 (100 = normal).</div>`
     + numInput('Resting symmetry score (0–5)', 'sbRest', { step: '1', placeholder: '0–5' })
     + numInput('Voluntary movement score (sum of 5 expressions × 1–5)', 'sbVol', { step: '1', placeholder: '0–25' })
     + numInput('Synkinesis score (sum 0–15)', 'sbSyn', { step: '1', placeholder: '0–15' });
@@ -4038,26 +4219,22 @@ function renderFrisen() {
 
   // Reference fundus photo for the selected grade.
   body += `
-    <div class="frisen-photo-card">
+    <div class="photo-card">
       <img src="assets/frisen/frisen-${g}.jpg" alt="Frisén grade ${g} optic disc photograph" loading="lazy">
-      <div class="frisen-photo-caption">Grade ${g} · ${data.t} — reference fundus photograph</div>
+      <div class="photo-caption">Grade ${g} · ${data.t} — reference fundus photograph</div>
     </div>`;
 
   body += resultBlock({ tone: data.tone, small: `GRADE ${g}`, verdict: data.t.toUpperCase(), ref: 'Frisén 1982' });
   body += infoCard('Description', `<p style="line-height:1.6;">${data.d}</p>`);
   body += infoCard('Reference gallery', `
-    <div class="frisen-gallery">
+    <div class="photo-grid">
       ${[0,1,2,3,4,5].map(i => `
-        <button class="frisen-thumb ${i === g ? 'active' : ''}" onclick="setInp('frisen', ${i})">
+        <button class="photo-thumb ${i === g ? 'active' : ''}" onclick="setInp('frisen', ${i})">
           <img src="assets/frisen/frisen-${i}.jpg" alt="Grade ${i}" loading="lazy">
           <span>Gr. ${i}</span>
         </button>`).join('')}
     </div>
-    <p class="frisen-credit">
-      Photographs © <a href="https://eyerounds.org/cases/papilledema-grading.htm" target="_blank" rel="noopener">EyeRounds.org</a>,
-      The University of Iowa — used under
-      <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank" rel="noopener">CC BY-NC-ND 3.0</a>.
-    </p>
+    ${eyeroundsCredit('papilledema-grading.htm')}
   `);
   body += sourceLine('Frisén L. JNNP 1982;45:13-18.');
   return calcShell('Frisén papilledema grade', '0–5', body, 'Neuro');
@@ -4308,9 +4485,7 @@ function render() {
     case 'schirmer': html = renderSchirmer(); break;
     case 'dewsii': html = renderDEWS(); break;
     case 'chandler': html = renderChandler(); break;
-    case 'trapdoor': html = renderTrapdoor(); break;
     case 'floor': html = renderFloor(); break;
-    case 'enophthal': html = renderEnophthal(); break;
     case 'tnm-eyelid': html = renderTNMEyelid(); break;
     case 'tnm-conj-scc': html = renderTNMConjSCC(); break;
     case 'tnm-conj-mel': html = renderTNMConjMel(); break;
