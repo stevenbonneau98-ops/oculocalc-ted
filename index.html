@@ -881,6 +881,78 @@ html, body {
   color: var(--slate);
 }
 
+/* Frisén papilledema photo card + gallery */
+.frisen-photo-card {
+  background: var(--card);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 8px 0 12px;
+  box-shadow: var(--shadow-1);
+}
+.frisen-photo-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #000;
+}
+.frisen-photo-caption {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text3);
+  padding: 10px 14px;
+  border-top: 1px solid var(--separator);
+}
+.frisen-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 4px 0 10px;
+}
+.frisen-thumb {
+  background: transparent;
+  border: 1.5px solid var(--separator);
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  font-family: inherit;
+  transition: border-color 0.15s var(--ease-ios), transform 0.12s var(--ease-ios);
+}
+.frisen-thumb:hover { border-color: var(--separator-strong); }
+.frisen-thumb:active { transform: scale(0.97); }
+.frisen-thumb.active { border-color: var(--signal); border-width: 2px; }
+.frisen-thumb img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+.frisen-thumb span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 3px 6px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+  text-align: left;
+}
+.frisen-credit {
+  font-family: var(--sans);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+.frisen-credit a { color: var(--signal); text-decoration: none; }
+.frisen-credit a:hover { text-decoration: underline; }
+
 /* Signature — appended to every screen */
 .signature {
   text-align: center;
@@ -3963,8 +4035,30 @@ function renderFrisen() {
     4: { tone: 'red', t: 'Marked', d: 'Total obscuration of a major vessel on the disc.' },
     5: { tone: 'red', t: 'Severe', d: 'Total obscuration of all vessels on AND leaving the disc (mushroom-like).' },
   }[g];
+
+  // Reference fundus photo for the selected grade.
+  body += `
+    <div class="frisen-photo-card">
+      <img src="assets/frisen/frisen-${g}.jpg" alt="Frisén grade ${g} optic disc photograph" loading="lazy">
+      <div class="frisen-photo-caption">Grade ${g} · ${data.t} — reference fundus photograph</div>
+    </div>`;
+
   body += resultBlock({ tone: data.tone, small: `GRADE ${g}`, verdict: data.t.toUpperCase(), ref: 'Frisén 1982' });
   body += infoCard('Description', `<p style="line-height:1.6;">${data.d}</p>`);
+  body += infoCard('Reference gallery', `
+    <div class="frisen-gallery">
+      ${[0,1,2,3,4,5].map(i => `
+        <button class="frisen-thumb ${i === g ? 'active' : ''}" onclick="setInp('frisen', ${i})">
+          <img src="assets/frisen/frisen-${i}.jpg" alt="Grade ${i}" loading="lazy">
+          <span>Gr. ${i}</span>
+        </button>`).join('')}
+    </div>
+    <p class="frisen-credit">
+      Photographs © <a href="https://eyerounds.org/cases/papilledema-grading.htm" target="_blank" rel="noopener">EyeRounds.org</a>,
+      The University of Iowa — used under
+      <a href="https://creativecommons.org/licenses/by-nc-nd/3.0/" target="_blank" rel="noopener">CC BY-NC-ND 3.0</a>.
+    </p>
+  `);
   body += sourceLine('Frisén L. JNNP 1982;45:13-18.');
   return calcShell('Frisén papilledema grade', '0–5', body, 'Neuro');
 }
