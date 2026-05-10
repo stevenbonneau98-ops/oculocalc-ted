@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>OculoCalc — TED</title>
+
+<!-- PWA -->
+<meta name="theme-color" content="#5856D6">
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="OculoCalc">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg: #f2f2f7;
+  --card: #ffffff;
+  --text: #000000;
+  --text2: #3c3c43;
+  --text3: #8e8e93;
+  --separator: rgba(60,60,67,0.12);
+  --accent: #5856D6;
+  --accent2: #007AFF;
+  --red: #FF3B30;
+  --orange: #FF9500;
+  --green: #34C759;
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --text: #ffffff;
+    --text2: #ebebf5;
+    --text3: #8e8e93;
+    --separator: rgba(84,84,88,0.36);
+  }
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  font-size: 16px;
+}
+
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Nav bar */
+.navbar {
+  padding: calc(8px + var(--safe-top)) 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-back, .nav-action {
+  color: var(--accent2);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  font-family: inherit;
+  font-weight: 400;
+}
+.nav-back svg { width: 12px; height: 20px; }
+.nav-title { font-size: 17px; font-weight: 600; }
+.nav-spacer { min-width: 60px; }
+
+/* Header */
+.large-title { padding: 8px 20px 6px; font-size: 34px; font-weight: 700; letter-spacing: -0.5px; }
+.subtitle { padding: 0 20px 12px; color: var(--text3); font-size: 15px; line-height: 1.4; }
+
+.scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px calc(120px + var(--safe-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Cards */
+.card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border: none;
+  width: 100%;
+  font-family: inherit;
+  text-align: left;
+}
+.card:active { transform: scale(0.98); background: rgba(120,120,128,0.08); }
+.card-row { display: flex; align-items: center; gap: 14px; }
+.card-icon {
+  width: 44px; height: 44px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: #fff;
+  font-weight: 700; font-size: 12px;
+  letter-spacing: -0.3px; text-align: center;
+  line-height: 1.1;
+}
+.card-content { flex: 1; min-width: 0; }
+.card-title { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+.card-desc { font-size: 13px; color: var(--text3); line-height: 1.35; }
+.chevron { color: var(--text3); font-size: 18px; flex-shrink: 0; opacity: 0.5; }
+
+.ic-nospecs { background: linear-gradient(135deg, #5856D6, #AF52DE); }
+.ic-cas { background: linear-gradient(135deg, #FF3B30, #FF9500); }
+.ic-eugogo { background: linear-gradient(135deg, #34C759, #30D158); }
+.ic-visa { background: linear-gradient(135deg, #007AFF, #5AC8FA); }
+.ic-info { background: linear-gradient(135deg, #8e8e93, #6e6e72); }
+.ic-history { background: linear-gradient(135deg, #FF9500, #FFCC00); }
+
+.section-header {
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  padding: 18px 16px 8px;
+  letter-spacing: 0.3px;
+}
+
+/* Item lists (tappable rows) */
+.item-list {
+  background: var(--card);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--separator);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+  background: var(--card);
+  border-left: none; border-right: none; border-top: none;
+  width: 100%;
+  font-family: inherit;
+  color: var(--text);
+  text-align: left;
+}
+.item:last-child { border-bottom: none; }
+.item:active { background: rgba(120,120,128,0.12); }
+.item-text { flex: 1; font-size: 15px; line-height: 1.35; padding-right: 12px; }
+.item-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+.toggle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #d1d1d6;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.toggle.active { background: var(--red); border-color: var(--red); }
+.toggle.active::after { content: '✓'; color: #fff; font-size: 16px; font-weight: 700; }
+.toggle.purple.active { background: var(--accent); border-color: var(--accent); }
+.toggle.green.active { background: var(--green); border-color: var(--green); }
+.toggle.blue.active { background: var(--accent2); border-color: var(--accent2); }
+
+/* Score banner */
+.score-banner {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 1px 0 var(--separator);
+}
+.score-big {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+.score-label {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+.score-status {
+  margin-top: 12px;
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.status-active { background: rgba(255,59,48,0.15); color: var(--red); }
+.status-inactive { background: rgba(52,199,89,0.15); color: var(--green); }
+.status-warning { background: rgba(255,149,0,0.15); color: var(--orange); }
+
+/* Hero result */
+.hero-result {
+  border-radius: 18px;
+  padding: 24px 20px;
+  margin-bottom: 14px;
+  text-align: center;
+  color: #fff;
+}
+.hero-result .num { font-size: 56px; font-weight: 700; letter-spacing: -2px; line-height: 1; }
+.hero-result .denom { font-size: 22px; opacity: 0.7; font-weight: 500; }
+.hero-result .verdict { font-size: 17px; font-weight: 600; margin-top: 8px; letter-spacing: 0.3px; }
+.hero-result .ref { font-size: 12px; opacity: 0.85; margin-top: 8px; }
+
+.info-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.info-card h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.info-card p { font-size: 14px; line-height: 1.5; color: var(--text); }
+.recommendation {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--separator);
+}
+.recommendation:last-child { border-bottom: none; }
+.rec-bullet {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+.rec-text { font-size: 14px; line-height: 1.45; }
+
+/* Action bar */
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px calc(16px + var(--safe-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, rgba(242,242,247,0));
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+  max-width: 600px;
+  margin: 0 auto;
+}
+@media (prefers-color-scheme: dark) {
+  .action-bar { background: linear-gradient(to top, #000 70%, rgba(0,0,0,0)); }
+}
+.btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.15s, transform 0.12s;
+}
+.btn:active { opacity: 0.7; transform: scale(0.98); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--card); color: var(--accent); }
+.btn-red { background: var(--red); color: #fff; }
+.btn-blue { background: var(--accent2); color: #fff; }
+.btn-green { background: var(--green); color: #fff; }
+
+/* Segmented control */
+.segmented {
+  display: flex;
+  background: rgba(120,120,128,0.16);
+  border-radius: 9px;
+  padding: 2px;
+  margin: 4px 0 10px;
+}
+.seg {
+  flex: 1; padding: 8px;
+  text-align: center; border-radius: 7px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; color: var(--text);
+  background: none; border: none;
+  font-family: inherit;
+}
+.seg.active {
+  background: var(--card);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  font-weight: 600;
+}
+
+/* Stepper for grades */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(120,120,128,0.12);
+  border-radius: 8px;
+  padding: 2px;
+}
+.step-btn {
+  min-width: 36px; height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: inherit;
+}
+.step-btn.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+/* Numeric input */
+.num-input {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.num-input label { display: block; font-size: 13px; color: var(--text3); margin-bottom: 8px; }
+.num-input input {
+  width: 100%;
+  font-size: 17px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  outline: none;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--separator);
+}
+
+.divider { height: 16px; }
+
+.eugogo-result-mild { background: linear-gradient(135deg, #34C759, #30D158); }
+.eugogo-result-moderate { background: linear-gradient(135deg, #FF9500, #FFCC00); }
+.eugogo-result-severe { background: linear-gradient(135deg, #FF3B30, #FF2D55); }
+
+.cas-active { background: linear-gradient(135deg, #FF3B30, #FF9500); }
+.cas-inactive { background: linear-gradient(135deg, #34C759, #30D158); }
+.nospecs-result { background: linear-gradient(135deg, #5856D6, #AF52DE); }
+.visa-result { background: linear-gradient(135deg, #007AFF, #5AC8FA); }
+
+.hint {
+  font-size: 12px;
+  color: var(--text3);
+  padding: 8px 16px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Footer note */
+.footer-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text3);
+  padding: 16px;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ============================================================================
+// OCULOCALC TED SUITE
+// All four major thyroid eye disease classification systems in one app.
+// ============================================================================
+
+const state = {
+  screen: 'home',
+  cas: {
+    initial: [false, false, false, false, false, false, false],
+    followup: [false, false, false],
+    showFollowup: false,
+  },
+  noSpecs: {
+    class1: false,           // upper lid retraction
+    class2: 0,               // soft tissue: 0=absent, 1=a min, 2=b mod, 3=c marked
+    class3: 0,               // proptosis
+    class4: 0,               // EOM
+    class5: 0,               // cornea
+    class6: 0,               // sight
+  },
+  eugogo: {
+    lidRetraction: 0,        // 0=none, 1=<2mm, 2=>=2mm
+    softTissue: 0,           // 0=none, 1=mild, 2=moderate-severe
+    proptosis: 0,            // 0=normal, 1=<3mm, 2=>=3mm
+    diplopia: 0,             // 0=none, 1=transient, 2=inconstant, 3=constant
+    cornea: 0,               // 0=none, 1=responsive to lubricants, 2=ulceration
+    optic: false,            // optic neuropathy
+  },
+  visa: {
+    optic: false,            // V: optic neuropathy
+    inflam: {
+      restPain: 0, gazePain: 0, chemosis: 0,
+      eyelidEdema: 0, conjInjection: 0, eyelidInjection: 0,
+    },
+    diplopia: 0,             // 0-3
+    restriction: 0,          // 0-3
+    appearance: 0,           // 0-3
+  },
+};
+
+const ICONS = {
+  back: '<svg viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+
+// ============================================================================
+// ROUTER
+// ============================================================================
+
+function navigate(screen) {
+  state.screen = screen;
+  window.scrollTo(0, 0);
+  render();
+}
+
+window.addEventListener('popstate', () => render());
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+function el(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html.trim();
+  return div.firstChild;
+}
+
+function navbar({ back, title, action }) {
+  return `
+    <div class="navbar">
+      ${back ? `<button class="nav-back" onclick="navigate('${back.to}')">${ICONS.back}${back.label}</button>` : '<div class="nav-spacer"></div>'}
+      <div class="nav-title">${title || ''}</div>
+      ${action ? `<button class="nav-action" onclick="${action.onclick}">${action.label}</button>` : '<div class="nav-spacer"></div>'}
+    </div>
+  `;
+}
+
+function actionBar(buttons) {
+  return `<div class="action-bar">${buttons.map(b => `<button class="btn ${b.class}" onclick="${b.onclick}">${b.label}</button>`).join('')}</div>`;
+}
+
+// ============================================================================
+// HOME SCREEN
+// ============================================================================
+
+function renderHome() {
+  return `
+    ${navbar({ title: '' })}
+    <div class="large-title">OculoCalc</div>
+    <div class="subtitle">Thyroid Eye Disease — classification & activity scoring suite.</div>
+    <div class="scroll">
+      <div class="section-header">Classification systems</div>
+
+      <button class="card" onclick="navigate('cas')">
+        <div class="card-row">
+          <div class="card-icon ic-cas">CAS</div>
+          <div class="card-content">
+            <div class="card-title">Clinical Activity Score</div>
+            <div class="card-desc">Mourits 1989 / EUGOGO · active vs inactive disease</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </button>
+
+      <button class="card" onclick="navigate('eugogo')">
+        <div class="card-row">
+          <div class="card-icon ic-eugogo">EU<br>GOGO</div>
+          <div class="card-content">
+            <div class="card-title">EUGOGO Severity</div>
+            <div class="card-desc">Mild / moderate-severe / sight-threatening</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </button>
+
+      <button class="card" onclick="navigate('visa')">
+        <div class="card-row">
+          <div class="card-icon ic-visa">VISA</div>
+          <div class="card-content">
+            <div class="card-title">VISA Classification</div>
+            <div class="card-desc">Vision · Inflammation · Strabismus · Appearance</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </button>
+
+      <button class="card" onclick="navigate('nospecs')">
+        <div class="card-row">
+          <div class="card-icon ic-nospecs">NO<br>SPECS</div>
+          <div class="card-content">
+            <div class="card-title">Modified NO SPECS</div>
+            <div class="card-desc">Werner 1977 · class-by-class severity</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </button>
+
+      <div class="section-header">Reference</div>
+
+      <button class="card" onclick="navigate('reference')">
+        <div class="card-row">
+          <div class="card-icon ic-info">i</div>
+          <div class="card-content">
+            <div class="card-title">About these systems</div>
+            <div class="card-desc">When to use which · key thresholds · sources</div>
+          </div>
+          <div class="chevron">›</div>
+        </div>
+      </button>
+
+      <div class="footer-note">
+        OculoCalc is a clinical reference tool. It does not replace clinical judgment.<br>
+        v0.1 · Built for educational use.
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// CAS — Clinical Activity Score
+// ============================================================================
+
+const CAS_INITIAL = [
+  'Spontaneous orbital pain',
+  'Gaze-evoked orbital pain',
+  'Eyelid swelling (active GO)',
+  'Eyelid erythema',
+  'Conjunctival redness (active GO)',
+  'Chemosis',
+  'Caruncle / plica inflammation',
+];
+
+const CAS_FOLLOWUP = [
+  'Increase of >2 mm proptosis',
+  'Decrease in uniocular excursion >8°',
+  'Decrease in VA equivalent to 1 Snellen line',
+];
+
+function renderCAS() {
+  const initialCount = state.cas.initial.filter(Boolean).length;
+  const followupCount = state.cas.followup.filter(Boolean).length;
+  const total = initialCount + followupCount;
+  const isFollowup = state.cas.showFollowup;
+
+  let active, label, statusClass;
+  if (!isFollowup) {
+    active = initialCount > 3;
+    label = active ? 'ACTIVE' : (initialCount === 3 ? 'BORDERLINE' : 'INACTIVE');
+    statusClass = active ? 'status-active' : (initialCount === 3 ? 'status-warning' : 'status-inactive');
+  } else {
+    active = total > 4;
+    label = active ? 'ACTIVE' : (total === 4 ? 'BORDERLINE' : 'INACTIVE');
+    statusClass = active ? 'status-active' : (total === 4 ? 'status-warning' : 'status-inactive');
+  }
+
+  const denom = isFollowup ? 10 : 7;
+  const displayScore = isFollowup ? total : initialCount;
+
+  return `
+    ${navbar({ back: { to: 'home', label: 'TED' }, title: 'CAS' })}
+    <div class="large-title">Clinical Activity Score</div>
+    <div class="subtitle">Tap each finding present. Active = >3/7 initial OR >4/10 follow-up.</div>
+
+    <div class="scroll">
+      <div class="segmented">
+        <button class="seg ${!isFollowup ? 'active' : ''}" onclick="setCASMode(false)">Initial (1–7)</button>
+        <button class="seg ${isFollowup ? 'active' : ''}" onclick="setCASMode(true)">Follow-up (1–10)</button>
+      </div>
+
+      <div class="score-banner">
+        <div class="score-big">${displayScore}<span style="font-size:24px; opacity:0.5;">/${denom}</span></div>
+        <div class="score-label">CAS Score</div>
+        <div class="score-status ${statusClass}">${label}</div>
+      </div>
+
+      <div class="item-list">
+        ${CAS_INITIAL.map((label, i) => `
+          <button class="item" onclick="toggleCAS('initial', ${i})">
+            <div class="item-text">${label}</div>
+            <div class="toggle ${state.cas.initial[i] ? 'active' : ''}"></div>
+          </button>
+        `).join('')}
+      </div>
+
+      ${isFollowup ? `
+        <div class="section-header">Follow-up items (visit ≥1–3 mo later)</div>
+        <div class="item-list">
+          ${CAS_FOLLOWUP.map((label, i) => `
+            <button class="item" onclick="toggleCAS('followup', ${i})">
+              <div class="item-text">${label}</div>
+              <div class="toggle ${state.cas.followup[i] ? 'active' : ''}"></div>
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+
+      <div class="hint">
+        Mourits et al. 1989, modified by EUGOGO. Initial visit uses items 1–7; subsequent visits add 8–10.
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Reset', onclick: 'resetCAS()' },
+      { class: 'btn-red', label: 'View result →', onclick: "navigate('cas-result')" },
+    ])}
+  `;
+}
+
+function setCASMode(followup) { state.cas.showFollowup = followup; render(); }
+function toggleCAS(type, i) { state.cas[type][i] = !state.cas[type][i]; render(); }
+function resetCAS() {
+  state.cas.initial = [false, false, false, false, false, false, false];
+  state.cas.followup = [false, false, false];
+  render();
+}
+
+function renderCASResult() {
+  const initialCount = state.cas.initial.filter(Boolean).length;
+  const followupCount = state.cas.followup.filter(Boolean).length;
+  const total = initialCount + followupCount;
+  const isFollowup = state.cas.showFollowup;
+  const score = isFollowup ? total : initialCount;
+  const denom = isFollowup ? 10 : 7;
+  const active = isFollowup ? total > 4 : initialCount > 3;
+
+  const findings = [
+    ...CAS_INITIAL.filter((_, i) => state.cas.initial[i]),
+    ...(isFollowup ? CAS_FOLLOWUP.filter((_, i) => state.cas.followup[i]) : []),
+  ];
+
+  const recsActive = [
+    'Active inflammatory phase — patient is a candidate for immunomodulatory therapy.',
+    'First-line: IV methylprednisolone 4.5 g cumulative over 12 weeks per EUGOGO 2021 guidelines.',
+    'Consider teprotumumab if available and access permits.',
+    'Defer rehabilitative surgery (decompression, strabismus, lid) until inactive.',
+    'Reassess CAS at 6–8 weeks; switch to follow-up scoring (1–10).',
+  ];
+  const recsInactive = [
+    'Stable / inactive disease — immunosuppression generally not indicated.',
+    'Surveillance with periodic reassessment is appropriate.',
+    'If residual deformity (proptosis, lid retraction, diplopia), patient may now be a candidate for rehabilitative surgery.',
+    'Optimize ocular surface: lubricants, taping at night if lagophthalmos.',
+    'Confirm euthyroid state and counsel on smoking cessation if applicable.',
+  ];
+
+  return `
+    ${navbar({ back: { to: 'cas', label: 'CAS' }, title: 'Result' })}
+    <div class="large-title">${active ? 'Active disease' : 'Inactive disease'}</div>
+    <div class="subtitle">${isFollowup ? 'Follow-up CAS threshold: >4/10' : 'Initial CAS threshold: >3/7'}</div>
+
+    <div class="scroll">
+      <div class="hero-result ${active ? 'cas-active' : 'cas-inactive'}">
+        <div><span class="num">${score}</span><span class="denom">/${denom}</span></div>
+        <div class="verdict">${active ? 'ACTIVE DISEASE' : 'INACTIVE DISEASE'}</div>
+        <div class="ref">Mourits et al. · modified by EUGOGO</div>
+      </div>
+
+      <div class="info-card">
+        <h3>Findings present (${findings.length})</h3>
+        <p style="line-height: 1.7;">${findings.length ? findings.map(f => '✓ ' + f).join('<br>') : '<em style="color:var(--text3)">None selected</em>'}</p>
+      </div>
+
+      <div class="info-card">
+        <h3>Clinical implications</h3>
+        ${(active ? recsActive : recsInactive).map(r => `
+          <div class="recommendation">
+            <div class="rec-bullet"></div>
+            <div class="rec-text">${r}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="info-card">
+        <h3>Cross-reference</h3>
+        <div class="recommendation" onclick="navigate('eugogo')" style="cursor:pointer;">
+          <div class="rec-bullet" style="background: var(--green);"></div>
+          <div class="rec-text">Run EUGOGO severity scoring →</div>
+        </div>
+        <div class="recommendation" onclick="navigate('visa')" style="cursor:pointer;">
+          <div class="rec-bullet" style="background: var(--accent2);"></div>
+          <div class="rec-text">Run VISA scoring →</div>
+        </div>
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Edit', onclick: "navigate('cas')" },
+      { class: 'btn-primary', label: 'Done', onclick: "navigate('home')" },
+    ])}
+  `;
+}
+
+// ============================================================================
+// EUGOGO Severity
+// ============================================================================
+
+function renderEUGOGO() {
+  const e = state.eugogo;
+
+  // Determine severity
+  let severity = 'mild';
+  if (e.optic || e.cornea === 2) {
+    severity = 'severe';
+  } else {
+    // Count moderate-severe criteria
+    let modCount = 0;
+    if (e.lidRetraction === 2) modCount++;
+    if (e.softTissue === 2) modCount++;
+    if (e.proptosis === 2) modCount++;
+    if (e.diplopia >= 2) modCount++;
+    if (modCount >= 2) severity = 'moderate-severe';
+  }
+
+  return `
+    ${navbar({ back: { to: 'home', label: 'TED' }, title: 'EUGOGO' })}
+    <div class="large-title">EUGOGO Severity</div>
+    <div class="subtitle">Set each parameter. Severity is auto-classified per EUGOGO criteria.</div>
+
+    <div class="scroll">
+      <div class="score-banner">
+        <div class="score-big" style="font-size: 28px;">${severity.toUpperCase()}</div>
+        <div class="score-label">EUGOGO Severity</div>
+        <div class="score-status ${severity === 'mild' ? 'status-inactive' : severity === 'moderate-severe' ? 'status-warning' : 'status-active'}">
+          ${severity === 'mild' ? '✓ Conservative management' : severity === 'moderate-severe' ? '⚠ Justifies treatment' : '⚠ SIGHT-THREATENING'}
+        </div>
+      </div>
+
+      ${eugogoStepperCard('Lid retraction', 'lidRetraction', [
+        { v: 0, l: 'None' },
+        { v: 1, l: '<2 mm' },
+        { v: 2, l: '≥2 mm' },
+      ])}
+
+      ${eugogoStepperCard('Soft tissue involvement', 'softTissue', [
+        { v: 0, l: 'None' },
+        { v: 1, l: 'Mild' },
+        { v: 2, l: 'Mod–Sev' },
+      ])}
+
+      ${eugogoStepperCard('Proptosis (vs normal for race/sex)', 'proptosis', [
+        { v: 0, l: 'Normal' },
+        { v: 1, l: '<3 mm' },
+        { v: 2, l: '≥3 mm' },
+      ])}
+
+      ${eugogoStepperCard('Diplopia', 'diplopia', [
+        { v: 0, l: 'None' },
+        { v: 1, l: 'Transient' },
+        { v: 2, l: 'Inconstant' },
+        { v: 3, l: 'Constant' },
+      ])}
+
+      ${eugogoStepperCard('Corneal exposure', 'cornea', [
+        { v: 0, l: 'None' },
+        { v: 1, l: 'Responsive to lubricants' },
+        { v: 2, l: 'Ulceration' },
+      ])}
+
+      <button class="item" style="border-radius: 14px; margin-bottom: 10px;" onclick="state.eugogo.optic=!state.eugogo.optic; render()">
+        <div class="item-text">
+          <div>Compressive optic neuropathy</div>
+          <div class="item-sub">Sight-threatening if present — overrides other criteria</div>
+        </div>
+        <div class="toggle ${e.optic ? 'active' : ''}"></div>
+      </button>
+
+      <div class="hint">
+        Sight-threatening = optic neuropathy or corneal ulceration.<br>
+        Moderate-severe = ≥2 of: lid retraction ≥2 mm, mod-sev soft tissue, proptosis ≥3 mm, diplopia ≥ inconstant.<br>
+        Mild = anything less.
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Reset', onclick: 'resetEUGOGO()' },
+      { class: 'btn-green', label: 'View result →', onclick: "navigate('eugogo-result')" },
+    ])}
+  `;
+}
+
+function eugogoStepperCard(label, field, opts) {
+  const val = state.eugogo[field];
+  return `
+    <div class="card" style="cursor: default;" onclick="event.stopPropagation()">
+      <div style="font-size: 15px; font-weight: 500; margin-bottom: 10px;">${label}</div>
+      <div class="stepper">
+        ${opts.map(o => `
+          <button class="step-btn ${val === o.v ? 'active' : ''}" onclick="state.eugogo.${field}=${o.v}; render()">${o.l}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function resetEUGOGO() {
+  state.eugogo = { lidRetraction: 0, softTissue: 0, proptosis: 0, diplopia: 0, cornea: 0, optic: false };
+  render();
+}
+
+function renderEUGOGOResult() {
+  const e = state.eugogo;
+  let severity = 'mild';
+  let title = 'Mild thyroid eye disease';
+  let resultClass = 'eugogo-result-mild';
+  let recs = [];
+
+  if (e.optic || e.cornea === 2) {
+    severity = 'severe';
+    title = 'Sight-threatening thyroid eye disease';
+    resultClass = 'eugogo-result-severe';
+    recs = [
+      'Urgent referral to specialist orbital service.',
+      e.optic ? 'Compressive optic neuropathy: high-dose IV methylprednisolone (e.g. 500–1000 mg/day × 3 days).' : '',
+      e.cornea === 2 ? 'Corneal ulceration: aggressive lubrication, antibiotic coverage, urgent ophthalmic review.' : '',
+      'Consider urgent orbital decompression if no improvement within 1–2 weeks of medical therapy.',
+      'Multidisciplinary management with endocrinology essential.',
+    ].filter(Boolean);
+  } else {
+    let modCount = 0;
+    if (e.lidRetraction === 2) modCount++;
+    if (e.softTissue === 2) modCount++;
+    if (e.proptosis === 2) modCount++;
+    if (e.diplopia >= 2) modCount++;
+    if (modCount >= 2) {
+      severity = 'moderate-severe';
+      title = 'Moderate-to-severe thyroid eye disease';
+      resultClass = 'eugogo-result-moderate';
+      recs = [
+        'Justifies immunosuppressive treatment if active (run CAS to confirm).',
+        'First-line: IV methylprednisolone 4.5 g cumulative over 12 weeks (EUGOGO 2021).',
+        'Second-line considerations: teprotumumab, mycophenolate, rituximab, orbital RT.',
+        'Plan rehabilitative surgery once disease is inactive.',
+        'Smoking cessation counseling — strongest modifiable risk factor.',
+      ];
+    } else {
+      recs = [
+        'Conservative management: lubricants, ocular surface care, prisms if mild diplopia.',
+        'Selenium 100 µg twice daily × 6 months may benefit (Marcocci et al., NEJM 2011).',
+        'Smoking cessation, optimize thyroid function (euthyroid is the target).',
+        'Watchful waiting — most mild TED stabilizes within 18–24 months.',
+        'Re-evaluate if symptoms progress.',
+      ];
+    }
+  }
+
+  return `
+    ${navbar({ back: { to: 'eugogo', label: 'EUGOGO' }, title: 'Result' })}
+    <div class="large-title">${title}</div>
+    <div class="subtitle">EUGOGO 2021 severity criteria</div>
+
+    <div class="scroll">
+      <div class="hero-result ${resultClass}">
+        <div class="verdict" style="font-size: 24px; margin-top: 0;">${severity.toUpperCase()}</div>
+        <div class="ref" style="margin-top: 12px;">European Group on Graves' Orbitopathy</div>
+      </div>
+
+      <div class="info-card">
+        <h3>Patient findings</h3>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Lid retraction: ${['None', '<2 mm', '≥2 mm'][e.lidRetraction]}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Soft tissue: ${['None', 'Mild', 'Moderate–severe'][e.softTissue]}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Proptosis: ${['Normal', '<3 mm above normal', '≥3 mm above normal'][e.proptosis]}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Diplopia: ${['None', 'Transient', 'Inconstant', 'Constant'][e.diplopia]}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Cornea: ${['None', 'Responsive to lubricants', 'Ulceration'][e.cornea]}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">Optic neuropathy: ${e.optic ? '⚠ PRESENT' : 'absent'}</div></div>
+      </div>
+
+      <div class="info-card">
+        <h3>Recommended approach</h3>
+        ${recs.map(r => `<div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">${r}</div></div>`).join('')}
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Edit', onclick: "navigate('eugogo')" },
+      { class: 'btn-primary', label: 'Done', onclick: "navigate('home')" },
+    ])}
+  `;
+}
+
+// ============================================================================
+// VISA — Vision, Inflammation, Strabismus, Appearance
+// ============================================================================
+
+function renderVISA() {
+  const v = state.visa;
+  const inflamTotal = v.inflam.restPain + v.inflam.gazePain + v.inflam.chemosis +
+                      v.inflam.eyelidEdema + v.inflam.conjInjection + v.inflam.eyelidInjection;
+  const totalSeverity = (v.optic ? 1 : 0) + Math.min(inflamTotal, 10) + v.diplopia + v.restriction + v.appearance;
+
+  return `
+    ${navbar({ back: { to: 'home', label: 'TED' }, title: 'VISA' })}
+    <div class="large-title">VISA Classification</div>
+    <div class="subtitle">Vision · Inflammation · Strabismus · Appearance · Dolman & Rootman 2006</div>
+
+    <div class="scroll">
+      <div class="score-banner">
+        <div class="score-big">${totalSeverity}<span style="font-size:24px; opacity:0.5;">/20</span></div>
+        <div class="score-label">Total severity</div>
+        <div class="score-status ${inflamTotal >= 5 ? 'status-active' : 'status-inactive'}">
+          Inflammatory index: ${inflamTotal}/10 ${inflamTotal >= 5 ? '— TREAT AGGRESSIVELY' : '— Conservative'}
+        </div>
+      </div>
+
+      <div class="section-header">V — Vision (optic neuropathy)</div>
+      <button class="item" style="border-radius: 14px; margin-bottom: 10px;" onclick="state.visa.optic=!state.visa.optic; render()">
+        <div class="item-text">
+          <div>Optic neuropathy present</div>
+          <div class="item-sub">RAPD, color desaturation, visual field defect, disc edema</div>
+        </div>
+        <div class="toggle blue ${v.optic ? 'active' : ''}"></div>
+      </button>
+
+      <div class="section-header">I — Inflammation (worst eye, max 10)</div>
+      ${visaStepper('Retrobulbar pain at rest', 'inflam.restPain', [{v:0,l:'No'},{v:1,l:'Yes'}])}
+      ${visaStepper('Pain with gaze', 'inflam.gazePain', [{v:0,l:'No'},{v:1,l:'Yes'}])}
+      ${visaStepper('Chemosis', 'inflam.chemosis', [{v:0,l:'Absent'},{v:1,l:'Behind grey line'},{v:2,l:'Anterior'}])}
+      ${visaStepper('Eyelid edema', 'inflam.eyelidEdema', [{v:0,l:'Absent'},{v:1,l:'Present'},{v:2,l:'+ festoon'}])}
+      ${visaStepper('Conjunctival injection', 'inflam.conjInjection', [{v:0,l:'No'},{v:1,l:'Yes'}])}
+      ${visaStepper('Eyelid injection', 'inflam.eyelidInjection', [{v:0,l:'No'},{v:1,l:'Yes'}])}
+
+      <div class="section-header">S — Strabismus</div>
+      ${visaStepper('Diplopia', 'diplopia', [{v:0,l:'None'},{v:1,l:'With gaze'},{v:2,l:'Intermittent'},{v:3,l:'Constant'}])}
+      ${visaStepper('Restriction of ductions', 'restriction', [{v:0,l:'>45°'},{v:1,l:'30–45°'},{v:2,l:'15–30°'},{v:3,l:'<15°'}])}
+
+      <div class="section-header">A — Appearance / Exposure</div>
+      ${visaStepper('Severity', 'appearance', [{v:0,l:'None'},{v:1,l:'Mild'},{v:2,l:'Moderate'},{v:3,l:'Severe'}])}
+
+      <div class="hint">
+        Inflammatory index ≥5/10 indicates aggressive treatment.<br>
+        Optic neuropathy = always treat aggressively regardless of other scores.
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Reset', onclick: 'resetVISA()' },
+      { class: 'btn-blue', label: 'View result →', onclick: "navigate('visa-result')" },
+    ])}
+  `;
+}
+
+function visaStepper(label, path, opts) {
+  const get = () => path.includes('.') ? state.visa[path.split('.')[0]][path.split('.')[1]] : state.visa[path];
+  const val = get();
+  return `
+    <div class="card" style="cursor: default;" onclick="event.stopPropagation()">
+      <div style="font-size: 14px; font-weight: 500; margin-bottom: 10px;">${label}</div>
+      <div class="stepper">
+        ${opts.map(o => `
+          <button class="step-btn ${val === o.v ? 'active' : ''}" onclick="setVISA('${path}', ${o.v})">${o.l}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function setVISA(path, val) {
+  if (path.includes('.')) {
+    const [a, b] = path.split('.');
+    state.visa[a][b] = val;
+  } else {
+    state.visa[path] = val;
+  }
+  render();
+}
+
+function resetVISA() {
+  state.visa = {
+    optic: false,
+    inflam: { restPain: 0, gazePain: 0, chemosis: 0, eyelidEdema: 0, conjInjection: 0, eyelidInjection: 0 },
+    diplopia: 0, restriction: 0, appearance: 0,
+  };
+  render();
+}
+
+function renderVISAResult() {
+  const v = state.visa;
+  const inflamTotal = v.inflam.restPain + v.inflam.gazePain + v.inflam.chemosis +
+                      v.inflam.eyelidEdema + v.inflam.conjInjection + v.inflam.eyelidInjection;
+  const totalSeverity = (v.optic ? 1 : 0) + Math.min(inflamTotal, 10) + v.diplopia + v.restriction + v.appearance;
+  const treatAggressive = v.optic || inflamTotal >= 5;
+
+  let recs = [];
+  if (v.optic) {
+    recs.push('⚠ Optic neuropathy — urgent IV methylprednisolone, consider decompression.');
+  }
+  if (inflamTotal >= 5) {
+    recs.push('Inflammatory index ≥5/10 — treat aggressively (IV steroids, biologics).');
+  } else if (inflamTotal > 0) {
+    recs.push('Inflammatory index <5 — conservative management, monitor.');
+  }
+  if (v.diplopia >= 2 || v.restriction >= 2) {
+    recs.push('Significant strabismus — consider prisms acutely; surgery only when stable ≥6 months.');
+  }
+  if (v.appearance >= 2) {
+    recs.push('Significant appearance/exposure — aggressive lubrication; rehabilitative lid surgery once inactive.');
+  }
+  if (recs.length === 0) {
+    recs.push('Mild disease — conservative management, periodic reassessment.');
+  }
+
+  return `
+    ${navbar({ back: { to: 'visa', label: 'VISA' }, title: 'Result' })}
+    <div class="large-title">VISA result</div>
+    <div class="subtitle">Severity = sum across all four domains (max 20)</div>
+
+    <div class="scroll">
+      <div class="hero-result visa-result">
+        <div><span class="num">${totalSeverity}</span><span class="denom">/20</span></div>
+        <div class="verdict">${treatAggressive ? 'AGGRESSIVE TREATMENT INDICATED' : 'CONSERVATIVE MANAGEMENT'}</div>
+        <div class="ref">Dolman & Rootman 2006 · ITEDS</div>
+      </div>
+
+      <div class="info-card">
+        <h3>Domain breakdown</h3>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text"><b>V</b>ision: ${v.optic ? '⚠ optic neuropathy' : 'normal'}</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text"><b>I</b>nflammation index: ${inflamTotal}/10</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text"><b>S</b>trabismus: diplopia ${v.diplopia}/3, restriction ${v.restriction}/3</div></div>
+        <div class="recommendation"><div class="rec-bullet"></div><div class="rec-text"><b>A</b>ppearance/exposure: ${v.appearance}/3</div></div>
+      </div>
+
+      <div class="info-card">
+        <h3>Recommended approach</h3>
+        ${recs.map(r => `<div class="recommendation"><div class="rec-bullet"></div><div class="rec-text">${r}</div></div>`).join('')}
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Edit', onclick: "navigate('visa')" },
+      { class: 'btn-primary', label: 'Done', onclick: "navigate('home')" },
+    ])}
+  `;
+}
+
+// ============================================================================
+// NO SPECS
+// ============================================================================
+
+const NOSPECS_GRADES = [
+  { v: 0, l: 'Absent' },
+  { v: 1, l: 'a (min)' },
+  { v: 2, l: 'b (mod)' },
+  { v: 3, l: 'c (marked)' },
+];
+
+function renderNOSPECS() {
+  const n = state.noSpecs;
+  let highestClass = 0;
+  if (n.class1) highestClass = 1;
+  if (n.class2 > 0) highestClass = 2;
+  if (n.class3 > 0) highestClass = 3;
+  if (n.class4 > 0) highestClass = 4;
+  if (n.class5 > 0) highestClass = 5;
+  if (n.class6 > 0) highestClass = 6;
+
+  return `
+    ${navbar({ back: { to: 'home', label: 'TED' }, title: 'NO SPECS' })}
+    <div class="large-title">Modified NO SPECS</div>
+    <div class="subtitle">Werner 1977. Each class graded 0/a/b/c. Highest class = severity.</div>
+
+    <div class="scroll">
+      <div class="score-banner">
+        <div class="score-big" style="font-size: 28px;">CLASS ${highestClass}</div>
+        <div class="score-label">Highest class involved</div>
+      </div>
+
+      <div class="card" style="cursor: default;">
+        <div style="font-size: 15px; font-weight: 600;">N — Class 0</div>
+        <div style="font-size: 13px; color: var(--text3); margin-top: 4px;">No symptoms or signs (always present at baseline)</div>
+      </div>
+
+      <button class="item" style="border-radius: 14px; margin-bottom: 10px;" onclick="state.noSpecs.class1=!state.noSpecs.class1; render()">
+        <div class="item-text">
+          <div><b>O — Class 1:</b> Only signs</div>
+          <div class="item-sub">Upper lid retraction, no lid lag or proptosis</div>
+        </div>
+        <div class="toggle purple ${n.class1 ? 'active' : ''}"></div>
+      </button>
+
+      ${noSpecsClass('S — Class 2: Soft tissue involvement', 'class2', 'edema/chemosis/lid fullness')}
+      ${noSpecsClass('P — Class 3: Proptosis', 'class3', 'a: 21–23 mm · b: 24–27 mm · c: ≥28 mm')}
+      ${noSpecsClass('E — Class 4: EOM involvement', 'class4', 'a: limit at extremes · b: restriction · c: fixation')}
+      ${noSpecsClass('C — Class 5: Corneal involvement', 'class5', 'a: stippling · b: ulceration · c: clouding/perforation')}
+      ${noSpecsClass('S — Class 6: Sight loss (optic nerve)', 'class6', 'a: 20/20–20/60 · b: 20/70–20/200 · c: <20/200')}
+
+      <div class="hint">
+        Original Werner 1969, modified 1977. NO SPECS captures severity but does not distinguish active from inactive disease — pair with CAS for activity assessment.
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Reset', onclick: 'resetNOSPECS()' },
+      { class: 'btn-primary', label: 'View result →', onclick: "navigate('nospecs-result')" },
+    ])}
+  `;
+}
+
+function noSpecsClass(label, field, sub) {
+  const val = state.noSpecs[field];
+  return `
+    <div class="card" style="cursor: default;" onclick="event.stopPropagation()">
+      <div style="font-size: 15px; font-weight: 600;">${label}</div>
+      <div style="font-size: 12px; color: var(--text3); margin-top: 2px; margin-bottom: 10px;">${sub}</div>
+      <div class="stepper">
+        ${NOSPECS_GRADES.map(g => `
+          <button class="step-btn ${val === g.v ? 'active' : ''}" onclick="state.noSpecs.${field}=${g.v}; render()">${g.l}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function resetNOSPECS() {
+  state.noSpecs = { class1: false, class2: 0, class3: 0, class4: 0, class5: 0, class6: 0 };
+  render();
+}
+
+function renderNOSPECSResult() {
+  const n = state.noSpecs;
+  let highestClass = 0;
+  if (n.class1) highestClass = 1;
+  if (n.class2 > 0) highestClass = 2;
+  if (n.class3 > 0) highestClass = 3;
+  if (n.class4 > 0) highestClass = 4;
+  if (n.class5 > 0) highestClass = 5;
+  if (n.class6 > 0) highestClass = 6;
+
+  const gradeStr = (v) => ['', 'a', 'b', 'c'][v] || '';
+  const summary = [
+    n.class1 ? 'Class 1: lid retraction' : null,
+    n.class2 > 0 ? `Class 2${gradeStr(n.class2)}: soft tissue` : null,
+    n.class3 > 0 ? `Class 3${gradeStr(n.class3)}: proptosis` : null,
+    n.class4 > 0 ? `Class 4${gradeStr(n.class4)}: EOM involvement` : null,
+    n.class5 > 0 ? `Class 5${gradeStr(n.class5)}: cornea` : null,
+    n.class6 > 0 ? `Class 6${gradeStr(n.class6)}: sight loss` : null,
+  ].filter(Boolean);
+
+  return `
+    ${navbar({ back: { to: 'nospecs', label: 'NO SPECS' }, title: 'Result' })}
+    <div class="large-title">NO SPECS Class ${highestClass}</div>
+    <div class="subtitle">Severity reflects highest class involved</div>
+
+    <div class="scroll">
+      <div class="hero-result nospecs-result">
+        <div class="verdict" style="font-size: 32px; margin-top: 0;">CLASS ${highestClass}</div>
+        <div class="ref" style="margin-top: 12px;">Werner, modified 1977</div>
+      </div>
+
+      <div class="info-card">
+        <h3>Findings (${summary.length})</h3>
+        ${summary.length ? summary.map(s => `<div class="recommendation"><div class="rec-bullet" style="background: var(--accent);"></div><div class="rec-text">${s}</div></div>`).join('') : '<p style="color: var(--text3)">No findings selected.</p>'}
+      </div>
+
+      <div class="info-card">
+        <h3>Important caveats</h3>
+        <p style="line-height: 1.6;">NO SPECS is <b>severity-only</b>. It does not distinguish active inflammatory disease from quiescent. Run <b>CAS</b> or <b>VISA</b> alongside to assess activity and determine treatment urgency.</p>
+      </div>
+    </div>
+
+    ${actionBar([
+      { class: 'btn-secondary', label: 'Edit', onclick: "navigate('nospecs')" },
+      { class: 'btn-primary', label: 'Done', onclick: "navigate('home')" },
+    ])}
+  `;
+}
+
+// ============================================================================
+// REFERENCE
+// ============================================================================
+
+function renderReference() {
+  return `
+    ${navbar({ back: { to: 'home', label: 'TED' }, title: 'Reference' })}
+    <div class="large-title">About</div>
+    <div class="subtitle">When to use which system</div>
+
+    <div class="scroll">
+      <div class="info-card">
+        <h3>Quick rule of thumb</h3>
+        <p style="line-height: 1.6;">
+          <b>CAS</b> answers: is the disease active right now?<br>
+          <b>EUGOGO</b> / <b>NO SPECS</b> answer: how severe is it?<br>
+          <b>VISA</b> answers both, in one pass.<br><br>
+          In practice, most TED clinics run <b>CAS + EUGOGO together</b> on every patient.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <h3>CAS — Mourits 1989</h3>
+        <p style="line-height: 1.6;">7 inflammatory items at first visit; add 3 progression items at follow-up. Active if &gt;3/7 (initial) or &gt;4/10 (follow-up). Active disease is the main indication for immunomodulatory therapy.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>EUGOGO 2021</h3>
+        <p style="line-height: 1.6;">Three buckets: mild (conservative care), moderate-severe (justifies treatment), sight-threatening (urgent). Drives treatment-vs-watchful-waiting decisions.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>VISA — Dolman & Rootman 2006</h3>
+        <p style="line-height: 1.6;">Used widely in North America. Combines activity (inflammatory index) and severity in one framework. Inflammatory index ≥5/10 triggers aggressive therapy.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>NO SPECS — Werner 1977</h3>
+        <p style="line-height: 1.6;">Historical mnemonic, severity-only. Useful for documentation and exam recall but does not distinguish active from inactive disease. Largely superseded by CAS/EUGOGO/VISA in clinical decision-making.</p>
+      </div>
+
+      <div class="info-card">
+        <h3>References</h3>
+        <p style="font-size: 12px; line-height: 1.6; color: var(--text2);">
+          Mourits MP et al. Br J Ophthalmol 1989;73:639-44.<br>
+          Bartalena L et al. (EUGOGO). Eur J Endocrinol 2021;185:G43-G67.<br>
+          Dolman PJ, Rootman J. Ophthal Plast Reconstr Surg 2006;22:319-24.<br>
+          Werner SC. Am J Ophthalmol 1977;83:725-7.
+        </p>
+      </div>
+
+      <div class="footer-note">
+        OculoCalc TED v0.1<br>
+        Educational tool — not a substitute for clinical judgment.
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================================
+// MAIN RENDER
+// ============================================================================
+
+function render() {
+  const app = document.getElementById('app');
+  let html;
+  switch (state.screen) {
+    case 'cas': html = renderCAS(); break;
+    case 'cas-result': html = renderCASResult(); break;
+    case 'eugogo': html = renderEUGOGO(); break;
+    case 'eugogo-result': html = renderEUGOGOResult(); break;
+    case 'visa': html = renderVISA(); break;
+    case 'visa-result': html = renderVISAResult(); break;
+    case 'nospecs': html = renderNOSPECS(); break;
+    case 'nospecs-result': html = renderNOSPECSResult(); break;
+    case 'reference': html = renderReference(); break;
+    default: html = renderHome();
+  }
+  app.innerHTML = html;
+}
+
+render();
+
+// Service worker registration for offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.log('SW failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>
