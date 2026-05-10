@@ -1,5 +1,5 @@
-// OculoCalc Service Worker — caches everything for offline use.
-const CACHE = 'oculocalc-ted-v1';
+// EyeCalc Service Worker — caches everything for offline use.
+const CACHE = 'eyecalc-v2-0-0';
 const FILES = [
   './',
   './index.html',

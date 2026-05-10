@@ -1,7 +1,7 @@
 {
-  "name": "OculoCalc — TED",
-  "short_name": "OculoCalc",
-  "description": "Thyroid eye disease classification suite: CAS, EUGOGO, VISA, NO SPECS.",
+  "name": "EyeCalc",
+  "short_name": "EyeCalc",
+  "description": "Ophthalmology, oculoplastics & orbital radiology calculator suite — TED, eyelid, lacrimal, TNM, glaucoma, retina, neuro-ophthalmology, pediatric and refractive tools.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
